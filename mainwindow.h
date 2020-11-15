@@ -7,6 +7,11 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QFile>
+#include <QDataStream>
 
 namespace Ui {
 class MainWindow;
@@ -30,10 +35,12 @@ private:
     Ui::MainWindow *ui;
     QNetworkAccessManager manager;
     QStringList stockNames;
+    QByteArray binaryReply;
+    QJsonDocument jdoc;
 
 private slots:
-    void replyFinished(QNetworkReply *);
     void readyRead();
+    void replyFinished();
 
 };
 
