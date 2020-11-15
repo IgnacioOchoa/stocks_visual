@@ -1,1 +1,6 @@
 *~
+Makefile*
+release/
+debug/
+qmake.*
+*.qmake

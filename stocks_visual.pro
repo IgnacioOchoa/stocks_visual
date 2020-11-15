@@ -5,7 +5,7 @@
 TEMPLATE = app
 TARGET = stocks_visual
 INCLUDEPATH += .
-QT += widgets
+QT += widgets network
 
 # You can make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
