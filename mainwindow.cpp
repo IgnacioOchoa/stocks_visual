@@ -13,7 +13,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //Set ending date to current date
     setDates();
     //Set starting date to 3 months before the current date
+    connect(ui->CB_stockName,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::stockCBchanged);
 
+    ui->LE_currency->setReadOnly(true);
+    ui->LE_symbol->setReadOnly(true);
+    ui->LE_type->setReadOnly(true);
+    ui->LE_description->setReadOnly(true);
+    ui->LE_displaysymbol->setReadOnly(true);
 }
 
 MainWindow::~MainWindow()
@@ -25,6 +31,9 @@ void MainWindow::setDates()
 {
     ui->cb_final_date->setDate(QDate::currentDate());
     ui->cb_initial_date->setDate(QDate::currentDate().addMonths(-3));
+
+    ui->cb_final_date->setDisplayFormat("dd.MM.yyyy");
+    ui->cb_initial_date->setDisplayFormat("dd.MM.yyyy");
 }
 
 void MainWindow:: getStocksInfo()
@@ -34,9 +43,9 @@ void MainWindow:: getStocksInfo()
     connect(reply, &QNetworkReply::finished, this, &MainWindow::replyFinished);
 }
 
-void MainWindow::populateStockInfo()
+void MainWindow::populateCBStockInfo()
 {
-    ui->stockNameCB->addItems(displaysymbols);
+    ui->CB_stockName->addItems(displaysymbols);
 }
 
 void MainWindow::readyRead()
@@ -53,12 +62,7 @@ void MainWindow::replyFinished()
     qInfo()<<"replyFinished is executed";
 
     jdoc = QJsonDocument::fromJson(binaryReply);
-    if(jdoc.isArray()) qInfo() << "The document is an array";
-    else if(jdoc.isObject()) qInfo() << "The document is an object";
-    else if (jdoc.isNull()) qInfo() << "The document is null";
-
     QJsonArray jsonArr = jdoc.array();
-    qInfo() << "Length of array = " <<  jsonArr.size();
 
     //Currencies:  ("USD", "")
     //Types:  ("EQS", "", "ETF", "DR", "UNT", "STP", "WAR", "PRF", "BND", "TRT", "SP", "PFS")
@@ -74,6 +78,15 @@ void MainWindow::replyFinished()
         displaysymbols.append(obj["displaySymbol"].toString());
     }
 
-    populateStockInfo();
+    populateCBStockInfo();
 
+}
+
+void MainWindow::stockCBchanged(int indx)
+{
+    ui->LE_currency->setText(currencies[indx]);
+    ui->LE_symbol->setText(symbols[indx]);
+    ui->LE_type->setText(types[indx]);
+    ui->LE_description->setText(descriptions[indx]);
+    ui->LE_displaysymbol->setText(displaysymbols[indx]);
 }

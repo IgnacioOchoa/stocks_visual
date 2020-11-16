@@ -18,14 +18,15 @@
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -35,24 +36,35 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
-    QHBoxLayout *horizontalLayout;
-    QFrame *frame;
-    QVBoxLayout *verticalLayout;
-    QGroupBox *groupBox;
-    QGridLayout *gridLayout;
-    QLabel *label;
-    QComboBox *stockNameCB;
-    QLabel *label_2;
-    QDateEdit *cb_initial_date;
-    QLabel *label_3;
-    QDateEdit *cb_final_date;
-    QTabWidget *tabWidget;
-    QWidget *tab;
-    QWidget *tab_2;
+    QGridLayout *gridLayout_2;
     QFrame *frame_2;
     QVBoxLayout *verticalLayout_2;
     QGraphicsView *graphicsView;
     QPlainTextEdit *plainTextEdit;
+    QFrame *frame;
+    QVBoxLayout *verticalLayout;
+    QGroupBox *groupBox;
+    QGridLayout *gridLayout;
+    QDateEdit *cb_final_date;
+    QLabel *label_3;
+    QLabel *label_2;
+    QLabel *label;
+    QComboBox *CB_stockName;
+    QDateEdit *cb_initial_date;
+    QTabWidget *tabWidget;
+    QWidget *tab;
+    QGridLayout *gridLayout_3;
+    QLabel *label_8;
+    QLineEdit *LE_symbol;
+    QLabel *label_4;
+    QLineEdit *LE_displaysymbol;
+    QLabel *label_5;
+    QLineEdit *LE_currency;
+    QLabel *label_6;
+    QTextEdit *LE_description;
+    QLabel *label_7;
+    QLineEdit *LE_type;
+    QWidget *tab_2;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuEdit;
@@ -67,79 +79,15 @@ public:
         MainWindow->resize(975, 594);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-        horizontalLayout = new QHBoxLayout(centralwidget);
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        frame = new QFrame(centralwidget);
-        frame->setObjectName(QString::fromUtf8("frame"));
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
-        frame->setSizePolicy(sizePolicy);
-        frame->setMinimumSize(QSize(400, 0));
-        frame->setFrameShape(QFrame::StyledPanel);
-        frame->setFrameShadow(QFrame::Raised);
-        verticalLayout = new QVBoxLayout(frame);
-        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        groupBox = new QGroupBox(frame);
-        groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        gridLayout = new QGridLayout(groupBox);
-        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        label = new QLabel(groupBox);
-        label->setObjectName(QString::fromUtf8("label"));
-
-        gridLayout->addWidget(label, 0, 0, 1, 1);
-
-        stockNameCB = new QComboBox(groupBox);
-        stockNameCB->setObjectName(QString::fromUtf8("stockNameCB"));
-
-        gridLayout->addWidget(stockNameCB, 0, 1, 1, 1);
-
-        label_2 = new QLabel(groupBox);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
-
-        gridLayout->addWidget(label_2, 1, 0, 1, 1);
-
-        cb_initial_date = new QDateEdit(groupBox);
-        cb_initial_date->setObjectName(QString::fromUtf8("cb_initial_date"));
-
-        gridLayout->addWidget(cb_initial_date, 1, 1, 1, 1);
-
-        label_3 = new QLabel(groupBox);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
-
-        gridLayout->addWidget(label_3, 2, 0, 1, 1);
-
-        cb_final_date = new QDateEdit(groupBox);
-        cb_final_date->setObjectName(QString::fromUtf8("cb_final_date"));
-
-        gridLayout->addWidget(cb_final_date, 2, 1, 1, 1);
-
-
-        verticalLayout->addWidget(groupBox);
-
-        tabWidget = new QTabWidget(frame);
-        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
-        tabWidget->setMinimumSize(QSize(0, 200));
-        tab = new QWidget();
-        tab->setObjectName(QString::fromUtf8("tab"));
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QString::fromUtf8("tab_2"));
-        tabWidget->addTab(tab_2, QString());
-
-        verticalLayout->addWidget(tabWidget);
-
-
-        horizontalLayout->addWidget(frame);
-
+        gridLayout_2 = new QGridLayout(centralwidget);
+        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         frame_2 = new QFrame(centralwidget);
         frame_2->setObjectName(QString::fromUtf8("frame_2"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(frame_2->sizePolicy().hasHeightForWidth());
-        frame_2->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(frame_2->sizePolicy().hasHeightForWidth());
+        frame_2->setSizePolicy(sizePolicy);
         frame_2->setFrameShape(QFrame::StyledPanel);
         frame_2->setFrameShadow(QFrame::Raised);
         verticalLayout_2 = new QVBoxLayout(frame_2);
@@ -151,16 +99,133 @@ public:
 
         plainTextEdit = new QPlainTextEdit(frame_2);
         plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(plainTextEdit->sizePolicy().hasHeightForWidth());
-        plainTextEdit->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(plainTextEdit->sizePolicy().hasHeightForWidth());
+        plainTextEdit->setSizePolicy(sizePolicy1);
 
         verticalLayout_2->addWidget(plainTextEdit);
 
 
-        horizontalLayout->addWidget(frame_2);
+        gridLayout_2->addWidget(frame_2, 0, 1, 1, 1);
+
+        frame = new QFrame(centralwidget);
+        frame->setObjectName(QString::fromUtf8("frame"));
+        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Expanding);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
+        frame->setSizePolicy(sizePolicy2);
+        frame->setMinimumSize(QSize(400, 0));
+        frame->setFrameShape(QFrame::StyledPanel);
+        frame->setFrameShadow(QFrame::Raised);
+        verticalLayout = new QVBoxLayout(frame);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        groupBox = new QGroupBox(frame);
+        groupBox->setObjectName(QString::fromUtf8("groupBox"));
+        gridLayout = new QGridLayout(groupBox);
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        cb_final_date = new QDateEdit(groupBox);
+        cb_final_date->setObjectName(QString::fromUtf8("cb_final_date"));
+
+        gridLayout->addWidget(cb_final_date, 2, 1, 1, 1);
+
+        label_3 = new QLabel(groupBox);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+
+        gridLayout->addWidget(label_3, 2, 0, 1, 1);
+
+        label_2 = new QLabel(groupBox);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        gridLayout->addWidget(label_2, 1, 0, 1, 1);
+
+        label = new QLabel(groupBox);
+        label->setObjectName(QString::fromUtf8("label"));
+
+        gridLayout->addWidget(label, 0, 0, 1, 1);
+
+        CB_stockName = new QComboBox(groupBox);
+        CB_stockName->setObjectName(QString::fromUtf8("CB_stockName"));
+
+        gridLayout->addWidget(CB_stockName, 0, 1, 1, 1);
+
+        cb_initial_date = new QDateEdit(groupBox);
+        cb_initial_date->setObjectName(QString::fromUtf8("cb_initial_date"));
+
+        gridLayout->addWidget(cb_initial_date, 1, 1, 1, 1);
+
+
+        verticalLayout->addWidget(groupBox);
+
+        tabWidget = new QTabWidget(frame);
+        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
+        tabWidget->setMinimumSize(QSize(0, 200));
+        tab = new QWidget();
+        tab->setObjectName(QString::fromUtf8("tab"));
+        gridLayout_3 = new QGridLayout(tab);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
+        label_8 = new QLabel(tab);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+
+        gridLayout_3->addWidget(label_8, 0, 0, 1, 1);
+
+        LE_symbol = new QLineEdit(tab);
+        LE_symbol->setObjectName(QString::fromUtf8("LE_symbol"));
+
+        gridLayout_3->addWidget(LE_symbol, 0, 1, 1, 1);
+
+        label_4 = new QLabel(tab);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+
+        gridLayout_3->addWidget(label_4, 1, 0, 1, 1);
+
+        LE_displaysymbol = new QLineEdit(tab);
+        LE_displaysymbol->setObjectName(QString::fromUtf8("LE_displaysymbol"));
+
+        gridLayout_3->addWidget(LE_displaysymbol, 1, 1, 1, 1);
+
+        label_5 = new QLabel(tab);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+
+        gridLayout_3->addWidget(label_5, 2, 0, 1, 1);
+
+        LE_currency = new QLineEdit(tab);
+        LE_currency->setObjectName(QString::fromUtf8("LE_currency"));
+
+        gridLayout_3->addWidget(LE_currency, 2, 1, 1, 1);
+
+        label_6 = new QLabel(tab);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+
+        gridLayout_3->addWidget(label_6, 3, 0, 1, 1);
+
+        LE_description = new QTextEdit(tab);
+        LE_description->setObjectName(QString::fromUtf8("LE_description"));
+        LE_description->setMaximumSize(QSize(16777215, 80));
+
+        gridLayout_3->addWidget(LE_description, 3, 1, 1, 1);
+
+        label_7 = new QLabel(tab);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+
+        gridLayout_3->addWidget(label_7, 4, 0, 1, 1);
+
+        LE_type = new QLineEdit(tab);
+        LE_type->setObjectName(QString::fromUtf8("LE_type"));
+
+        gridLayout_3->addWidget(LE_type, 4, 1, 1, 1);
+
+        tabWidget->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QString::fromUtf8("tab_2"));
+        tabWidget->addTab(tab_2, QString());
+
+        verticalLayout->addWidget(tabWidget);
+
+
+        gridLayout_2->addWidget(frame, 0, 0, 1, 1);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
@@ -195,12 +260,17 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        groupBox->setTitle(QCoreApplication::translate("MainWindow", "GroupBox", nullptr));
-        label->setText(QCoreApplication::translate("MainWindow", "Stock Name", nullptr));
-        label_2->setText(QCoreApplication::translate("MainWindow", "Starting Date", nullptr));
+        groupBox->setTitle(QCoreApplication::translate("MainWindow", "Data selection", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Ending Date", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("MainWindow", "Tab 1", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("MainWindow", "Tab 2", nullptr));
+        label_2->setText(QCoreApplication::translate("MainWindow", "Starting Date", nullptr));
+        label->setText(QCoreApplication::translate("MainWindow", "Stock Name", nullptr));
+        label_8->setText(QCoreApplication::translate("MainWindow", "Symbol", nullptr));
+        label_4->setText(QCoreApplication::translate("MainWindow", "Display Symbol", nullptr));
+        label_5->setText(QCoreApplication::translate("MainWindow", "Currency", nullptr));
+        label_6->setText(QCoreApplication::translate("MainWindow", "Description", nullptr));
+        label_7->setText(QCoreApplication::translate("MainWindow", "Type", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("MainWindow", "Details", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("MainWindow", "Other info", nullptr));
         menuFile->setTitle(QCoreApplication::translate("MainWindow", "File", nullptr));
         menuEdit->setTitle(QCoreApplication::translate("MainWindow", "Edit", nullptr));
         menuView->setTitle(QCoreApplication::translate("MainWindow", "View", nullptr));

@@ -10,7 +10,6 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QFile>
 #include <QDataStream>
 
 namespace Ui {
@@ -30,7 +29,7 @@ private:
     void setDates();
     void getStocksInfo();
     void getStockNames(QStringList& );
-    void populateStockInfo();
+    void populateCBStockInfo();
 
 
     Ui::MainWindow *ui;
@@ -48,6 +47,7 @@ private:
 private slots:
     void readyRead();
     void replyFinished();
+    void stockCBchanged(int);
 
 };
 
