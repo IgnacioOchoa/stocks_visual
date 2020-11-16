@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Prepare all the information
 
     //Connect to the API and get stock names
-    populateStockNames();
+    getStocksInfo();
     //Set ending date to current date
     setDates();
     //Set starting date to 3 months before the current date
@@ -27,11 +27,16 @@ void MainWindow::setDates()
     ui->cb_initial_date->setDate(QDate::currentDate().addMonths(-3));
 }
 
-void MainWindow::populateStockNames()
+void MainWindow:: getStocksInfo()
 {
     QNetworkReply* reply = manager.get(QNetworkRequest(QUrl("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=bubf32748v6ouqkj0ffg")));
     connect(reply, &QNetworkReply::readyRead, this, &MainWindow::readyRead);
     connect(reply, &QNetworkReply::finished, this, &MainWindow::replyFinished);
+}
+
+void MainWindow::populateStockInfo()
+{
+    ui->stockNameCB->addItems(displaysymbols);
 }
 
 void MainWindow::readyRead()
@@ -55,10 +60,20 @@ void MainWindow::replyFinished()
     QJsonArray jsonArr = jdoc.array();
     qInfo() << "Length of array = " <<  jsonArr.size();
 
-    if (jsonArr[0].isObject()) qInfo() << "jsonArr[0] is an object";
-    qInfo() << jsonArr[0].toObject().keys();
+    //Currencies:  ("USD", "")
+    //Types:  ("EQS", "", "ETF", "DR", "UNT", "STP", "WAR", "PRF", "BND", "TRT", "SP", "PFS")
+    //Keys: ("currency", "description", "displaySymbol", "symbol", "type")
 
-    //QJsonValue jsonObj = jsonArr[3];
-    //qInfo() << jsonVal.toString();
+    for (int i=0; i<jsonArr.size(); i++)
+    {
+        QJsonObject obj = jsonArr[i].toObject();
+        symbols.append(obj["symbol"].toString());
+        types.append(obj["type"].toString());
+        currencies.append(obj["currency"].toString());
+        descriptions.append(obj["description"].toString());
+        displaysymbols.append(obj["displaySymbol"].toString());
+    }
+
+    populateStockInfo();
 
 }

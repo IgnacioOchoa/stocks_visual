@@ -41,7 +41,7 @@ public:
     QGroupBox *groupBox;
     QGridLayout *gridLayout;
     QLabel *label;
-    QComboBox *comboBox;
+    QComboBox *stockNameCB;
     QLabel *label_2;
     QDateEdit *cb_initial_date;
     QLabel *label_3;
@@ -90,10 +90,10 @@ public:
 
         gridLayout->addWidget(label, 0, 0, 1, 1);
 
-        comboBox = new QComboBox(groupBox);
-        comboBox->setObjectName(QString::fromUtf8("comboBox"));
+        stockNameCB = new QComboBox(groupBox);
+        stockNameCB->setObjectName(QString::fromUtf8("stockNameCB"));
 
-        gridLayout->addWidget(comboBox, 0, 1, 1, 1);
+        gridLayout->addWidget(stockNameCB, 0, 1, 1, 1);
 
         label_2 = new QLabel(groupBox);
         label_2->setObjectName(QString::fromUtf8("label_2"));

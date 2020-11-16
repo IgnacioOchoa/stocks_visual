@@ -28,8 +28,9 @@ public:
 private:
 
     void setDates();
-    void populateStockNames();
+    void getStocksInfo();
     void getStockNames(QStringList& );
+    void populateStockInfo();
 
 
     Ui::MainWindow *ui;
@@ -37,6 +38,12 @@ private:
     QStringList stockNames;
     QByteArray binaryReply;
     QJsonDocument jdoc;
+
+    QStringList symbols;
+    QStringList types;
+    QStringList currencies;
+    QStringList descriptions;
+    QStringList displaysymbols;
 
 private slots:
     void readyRead();
