@@ -24,6 +24,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTextEdit>
@@ -51,6 +52,7 @@ public:
     QLabel *label;
     QComboBox *CB_stockName;
     QDateEdit *cb_initial_date;
+    QPushButton *PB_plot;
     QTabWidget *tabWidget;
     QWidget *tab;
     QGridLayout *gridLayout_3;
@@ -155,6 +157,11 @@ public:
         cb_initial_date->setObjectName(QString::fromUtf8("cb_initial_date"));
 
         gridLayout->addWidget(cb_initial_date, 1, 1, 1, 1);
+
+        PB_plot = new QPushButton(groupBox);
+        PB_plot->setObjectName(QString::fromUtf8("PB_plot"));
+
+        gridLayout->addWidget(PB_plot, 3, 1, 1, 1);
 
 
         verticalLayout->addWidget(groupBox);
@@ -264,6 +271,7 @@ public:
         label_3->setText(QCoreApplication::translate("MainWindow", "Ending Date", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "Starting Date", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Stock Name", nullptr));
+        PB_plot->setText(QCoreApplication::translate("MainWindow", "Plot", nullptr));
         label_8->setText(QCoreApplication::translate("MainWindow", "Symbol", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "Display Symbol", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "Currency", nullptr));

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStringList>
+#include <QPushButton>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -11,6 +12,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QDataStream>
+#include <QVariantMap>
 
 namespace Ui {
 class MainWindow;
@@ -28,15 +30,18 @@ private:
 
     void setDates();
     void getStocksInfo();
-    void getStockNames(QStringList& );
+    void getStockNames(QStringList&);
+    void getStockData();
     void populateCBStockInfo();
 
 
     Ui::MainWindow *ui;
     QNetworkAccessManager manager;
     QStringList stockNames;
-    QByteArray binaryReply;
-    QJsonDocument jdoc;
+    QByteArray binaryInfoReply;
+    QByteArray binaryDataReply;
+    QJsonDocument jdocInfo;
+    QJsonDocument jdocData;
 
     QStringList symbols;
     QStringList types;
@@ -45,9 +50,12 @@ private:
     QStringList displaysymbols;
 
 private slots:
-    void readyRead();
-    void replyFinished();
+    void InfoReadyRead();
+    void InfoReplyFinished();
+    void DataReadyRead();
+    void DataReplyFinished();
     void stockCBchanged(int);
+    void plotPressed();
 
 };
 
