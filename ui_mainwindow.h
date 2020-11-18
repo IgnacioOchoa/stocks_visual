@@ -46,12 +46,12 @@ public:
     QVBoxLayout *verticalLayout;
     QGroupBox *groupBox;
     QGridLayout *gridLayout;
-    QDateEdit *cb_final_date;
+    QDateEdit *CB_final_date;
     QLabel *label_3;
     QLabel *label_2;
     QLabel *label;
     QComboBox *CB_stockName;
-    QDateEdit *cb_initial_date;
+    QDateEdit *CB_initial_date;
     QPushButton *PB_plot;
     QTabWidget *tabWidget;
     QWidget *tab;
@@ -128,10 +128,10 @@ public:
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
         gridLayout = new QGridLayout(groupBox);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        cb_final_date = new QDateEdit(groupBox);
-        cb_final_date->setObjectName(QString::fromUtf8("cb_final_date"));
+        CB_final_date = new QDateEdit(groupBox);
+        CB_final_date->setObjectName(QString::fromUtf8("CB_final_date"));
 
-        gridLayout->addWidget(cb_final_date, 2, 1, 1, 1);
+        gridLayout->addWidget(CB_final_date, 2, 1, 1, 1);
 
         label_3 = new QLabel(groupBox);
         label_3->setObjectName(QString::fromUtf8("label_3"));
@@ -153,10 +153,10 @@ public:
 
         gridLayout->addWidget(CB_stockName, 0, 1, 1, 1);
 
-        cb_initial_date = new QDateEdit(groupBox);
-        cb_initial_date->setObjectName(QString::fromUtf8("cb_initial_date"));
+        CB_initial_date = new QDateEdit(groupBox);
+        CB_initial_date->setObjectName(QString::fromUtf8("CB_initial_date"));
 
-        gridLayout->addWidget(cb_initial_date, 1, 1, 1, 1);
+        gridLayout->addWidget(CB_initial_date, 1, 1, 1, 1);
 
         PB_plot = new QPushButton(groupBox);
         PB_plot->setObjectName(QString::fromUtf8("PB_plot"));

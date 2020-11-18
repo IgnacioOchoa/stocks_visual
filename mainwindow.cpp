@@ -29,11 +29,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::setDates()
 {
-    ui->cb_final_date->setDate(QDate::currentDate());
-    ui->cb_initial_date->setDate(QDate::currentDate().addMonths(-3));
+    ui->CB_final_date->setDate(QDate::currentDate());
+    ui->CB_initial_date->setDate(QDate::currentDate().addMonths(-3));
 
-    ui->cb_final_date->setDisplayFormat("dd.MM.yyyy");
-    ui->cb_initial_date->setDisplayFormat("dd.MM.yyyy");
+    ui->CB_final_date->setDisplayFormat("dd.MM.yyyy");
+    ui->CB_initial_date->setDisplayFormat("dd.MM.yyyy");
 }
 
 void MainWindow:: getStocksInfo()
@@ -51,10 +51,16 @@ void MainWindow::plotPressed()
 
 void MainWindow::getStockData()
 {
-    //QString from
 
-    //QString s =
-    QUrl url("https://finnhub.io/api/v1/stock/candle?symbol=AAPL&resolution=D&from=1572351390&to=1572910590&token=bubf32748v6ouqkj0ffg");
+    QDateTime final_dt = ui->CB_final_date->date().endOfDay();
+    qint64 final_date = final_dt.toSecsSinceEpoch();
+
+    QDateTime initial_dt = ui->CB_initial_date->date().startOfDay();
+    qint64 initial_date =initial_dt.toSecsSinceEpoch();
+
+    QString strUrl = "https://finnhub.io/api/v1/stock/candle?symbol=AAPL&resolution=D&from=" + QString::number(initial_date)
+            + "&to=" + QString::number(final_date) + "&token=bubf32748v6ouqkj0ffg";
+    QUrl url(strUrl);
     QNetworkReply* reply = manager.get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::readyRead, this, &MainWindow::DataReadyRead);
     connect(reply, &QNetworkReply::finished, this, &MainWindow::DataReplyFinished);
@@ -78,9 +84,9 @@ void MainWindow::DataReplyFinished()
 {
     qInfo() << "replyData Finished is executed";
     jdocData = QJsonDocument::fromJson(binaryDataReply);
+    binaryDataReply.clear();
 
     if (jdocData.isNull()) qInfo() << "The jdoc Data is null";
-    if (jdocData.isObject()) qInfo() << "It is an object!!";
 
     QJsonObject obj = jdocData.object();
     if(obj.isEmpty()) qInfo() << "El objeto salio mal";
@@ -88,7 +94,39 @@ void MainWindow::DataReplyFinished()
     qInfo() << obj.keys();
 
     QVariantMap vm = obj.toVariantMap();
-    qInfo() << "vm[\"o\"]" << vm["o"];
+    QVariantList vl_c = vm["c"].toList();
+    QVariantList vl_h = vm["h"].toList();
+    QVariantList vl_l = vm["l"].toList();
+    QVariantList vl_o = vm["o"].toList();
+    QVariantList vl_t = vm["t"].toList();
+    QVariantList vl_v = vm["v"].toList();
+
+    c_data.clear();
+    h_data.clear();
+    l_data.clear();
+    o_data.clear();
+    t_data.clear();
+    v_data.clear();
+
+    for(int i=0; i<vl_t.size(); i++)
+    {
+        c_data.append(vl_c[i].toDouble());
+        h_data.append(vl_h[i].toDouble());
+        l_data.append(vl_l[i].toDouble());
+        o_data.append(vl_o[i].toDouble());
+        t_data.append(vl_t[i].toLongLong());
+        v_data.append(vl_v[i].toLongLong());
+    }
+
+    qInfo() << "h_data" << h_data;
+    qInfo() << "Time stamps:";
+    for(int i=0; i<t_data.size(); i++)
+    {
+        QDateTime dateTime;
+        dateTime.setSecsSinceEpoch(t_data[i]);
+        qInfo() << dateTime.toString();
+    }
+
 }
 
 void MainWindow::InfoReadyRead()
@@ -105,6 +143,7 @@ void MainWindow::InfoReplyFinished()
     qInfo()<<"replyInfo Finished is executed";
 
     jdocInfo = QJsonDocument::fromJson(binaryInfoReply);
+    binaryInfoReply.clear();
     QJsonArray jsonArr = jdocInfo.array();
 
     //Currencies:  ("USD", "")

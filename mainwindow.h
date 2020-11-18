@@ -13,6 +13,8 @@
 #include <QJsonObject>
 #include <QDataStream>
 #include <QVariantMap>
+#include <QVector>
+#include <QDateTime>
 
 namespace Ui {
 class MainWindow;
@@ -34,7 +36,6 @@ private:
     void getStockData();
     void populateCBStockInfo();
 
-
     Ui::MainWindow *ui;
     QNetworkAccessManager manager;
     QStringList stockNames;
@@ -49,6 +50,13 @@ private:
     QStringList descriptions;
     QStringList displaysymbols;
 
+    QVector<double> c_data;
+    QVector<double> h_data;
+    QVector<double> l_data;
+    QVector<double> o_data;
+    QVector<long long> t_data;
+    QVector<long long> v_data;
+
 private slots:
     void InfoReadyRead();
     void InfoReplyFinished();
@@ -56,7 +64,6 @@ private slots:
     void DataReplyFinished();
     void stockCBchanged(int);
     void plotPressed();
-
 };
 
 #endif // MAINWINDOW_H
