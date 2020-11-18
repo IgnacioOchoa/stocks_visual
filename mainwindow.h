@@ -15,6 +15,9 @@
 #include <QVariantMap>
 #include <QVector>
 #include <QDateTime>
+#include <QtCharts>
+#include <QtCharts/QCandlestickSeries>
+#include <QtCharts/QCandlestickSet>
 
 namespace Ui {
 class MainWindow;
@@ -35,6 +38,7 @@ private:
     void getStockNames(QStringList&);
     void getStockData();
     void populateCBStockInfo();
+    void plotData();
 
     Ui::MainWindow *ui;
     QNetworkAccessManager manager;
@@ -49,6 +53,8 @@ private:
     QStringList currencies;
     QStringList descriptions;
     QStringList displaysymbols;
+
+    int numPlotPoints;
 
     QVector<double> c_data;
     QVector<double> h_data;

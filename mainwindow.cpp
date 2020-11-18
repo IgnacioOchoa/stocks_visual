@@ -71,6 +71,47 @@ void MainWindow::populateCBStockInfo()
     ui->CB_stockName->addItems(displaysymbols);
 }
 
+void MainWindow::plotData()
+{
+    QCandlestickSeries* series = new QCandlestickSeries();
+
+    series->setName("Stocks");
+    series->setIncreasingColor(QColor(Qt::green));
+    series->setDecreasingColor(QColor(Qt::red));
+
+    QStringList categories;
+
+    qInfo() << "Sizes: " << h_data.size() << " " << o_data.size() << " " << c_data.size();
+
+    for (int i=0; i<numPlotPoints; i++)
+    {
+        QCandlestickSet* cdlSet = new QCandlestickSet(o_data[i], h_data[i], l_data[i], c_data[i], t_data[i]);
+        series->append(cdlSet);
+        categories << QDateTime::fromMSecsSinceEpoch(cdlSet->timestamp()).toString("dd");
+    }
+
+    QChart *chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle("Stock series from this date to this date");
+    chart->setAnimationOptions(QChart::SeriesAnimations);
+
+    chart->createDefaultAxes();
+
+    QBarCategoryAxis *axisX = qobject_cast<QBarCategoryAxis *>(chart->axes(Qt::Horizontal).at(0));
+    axisX->setCategories(categories);
+
+    QValueAxis *axisY = qobject_cast<QValueAxis *>(chart->axes(Qt::Vertical).at(0));
+    axisY->setMax(axisY->max() * 1.01);
+    axisY->setMin(axisY->min() * 0.99);
+
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignBottom);
+
+    ui->GV_chartView->setChart(chart);
+    ui->GV_chartView->setRenderHint(QPainter::Antialiasing);
+    qInfo() << "Reached the end of plot";
+}
+
 void MainWindow::DataReadyRead()
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply *>(sender());
@@ -108,7 +149,10 @@ void MainWindow::DataReplyFinished()
     t_data.clear();
     v_data.clear();
 
-    for(int i=0; i<vl_t.size(); i++)
+    numPlotPoints = vl_t.size();
+    qInfo() << "numPlotPoints = " << numPlotPoints;
+
+    for(int i=0; i<numPlotPoints; i++)
     {
         c_data.append(vl_c[i].toDouble());
         h_data.append(vl_h[i].toDouble());
@@ -127,6 +171,7 @@ void MainWindow::DataReplyFinished()
         qInfo() << dateTime.toString();
     }
 
+    plotData();
 }
 
 void MainWindow::InfoReadyRead()

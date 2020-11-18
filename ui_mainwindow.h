@@ -15,7 +15,6 @@
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QDateEdit>
 #include <QtWidgets/QFrame>
-#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
@@ -30,6 +29,7 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "QtCharts"
 
 QT_BEGIN_NAMESPACE
 
@@ -40,7 +40,7 @@ public:
     QGridLayout *gridLayout_2;
     QFrame *frame_2;
     QVBoxLayout *verticalLayout_2;
-    QGraphicsView *graphicsView;
+    QChartView *GV_chartView;
     QPlainTextEdit *plainTextEdit;
     QFrame *frame;
     QVBoxLayout *verticalLayout;
@@ -94,10 +94,10 @@ public:
         frame_2->setFrameShadow(QFrame::Raised);
         verticalLayout_2 = new QVBoxLayout(frame_2);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        graphicsView = new QGraphicsView(frame_2);
-        graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
+        GV_chartView = new QChartView(frame_2);
+        GV_chartView->setObjectName(QString::fromUtf8("GV_chartView"));
 
-        verticalLayout_2->addWidget(graphicsView);
+        verticalLayout_2->addWidget(GV_chartView);
 
         plainTextEdit = new QPlainTextEdit(frame_2);
         plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
