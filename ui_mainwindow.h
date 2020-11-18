@@ -24,6 +24,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTextEdit>
@@ -56,17 +57,18 @@ public:
     QTabWidget *tabWidget;
     QWidget *tab;
     QGridLayout *gridLayout_3;
-    QLabel *label_8;
+    QLineEdit *LE_currency;
+    QLabel *label_7;
+    QTextEdit *LE_description;
     QLineEdit *LE_symbol;
     QLabel *label_4;
-    QLineEdit *LE_displaysymbol;
     QLabel *label_5;
-    QLineEdit *LE_currency;
+    QLabel *label_8;
+    QLineEdit *LE_displaysymbol;
     QLabel *label_6;
-    QTextEdit *LE_description;
-    QLabel *label_7;
     QLineEdit *LE_type;
     QWidget *tab_2;
+    QSpacerItem *verticalSpacer;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuEdit;
@@ -173,10 +175,21 @@ public:
         tab->setObjectName(QString::fromUtf8("tab"));
         gridLayout_3 = new QGridLayout(tab);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        label_8 = new QLabel(tab);
-        label_8->setObjectName(QString::fromUtf8("label_8"));
+        LE_currency = new QLineEdit(tab);
+        LE_currency->setObjectName(QString::fromUtf8("LE_currency"));
 
-        gridLayout_3->addWidget(label_8, 0, 0, 1, 1);
+        gridLayout_3->addWidget(LE_currency, 2, 1, 1, 1);
+
+        label_7 = new QLabel(tab);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+
+        gridLayout_3->addWidget(label_7, 4, 0, 1, 1);
+
+        LE_description = new QTextEdit(tab);
+        LE_description->setObjectName(QString::fromUtf8("LE_description"));
+        LE_description->setMaximumSize(QSize(16777215, 80));
+
+        gridLayout_3->addWidget(LE_description, 3, 1, 1, 1);
 
         LE_symbol = new QLineEdit(tab);
         LE_symbol->setObjectName(QString::fromUtf8("LE_symbol"));
@@ -188,36 +201,25 @@ public:
 
         gridLayout_3->addWidget(label_4, 1, 0, 1, 1);
 
-        LE_displaysymbol = new QLineEdit(tab);
-        LE_displaysymbol->setObjectName(QString::fromUtf8("LE_displaysymbol"));
-
-        gridLayout_3->addWidget(LE_displaysymbol, 1, 1, 1, 1);
-
         label_5 = new QLabel(tab);
         label_5->setObjectName(QString::fromUtf8("label_5"));
 
         gridLayout_3->addWidget(label_5, 2, 0, 1, 1);
 
-        LE_currency = new QLineEdit(tab);
-        LE_currency->setObjectName(QString::fromUtf8("LE_currency"));
+        label_8 = new QLabel(tab);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
 
-        gridLayout_3->addWidget(LE_currency, 2, 1, 1, 1);
+        gridLayout_3->addWidget(label_8, 0, 0, 1, 1);
+
+        LE_displaysymbol = new QLineEdit(tab);
+        LE_displaysymbol->setObjectName(QString::fromUtf8("LE_displaysymbol"));
+
+        gridLayout_3->addWidget(LE_displaysymbol, 1, 1, 1, 1);
 
         label_6 = new QLabel(tab);
         label_6->setObjectName(QString::fromUtf8("label_6"));
 
         gridLayout_3->addWidget(label_6, 3, 0, 1, 1);
-
-        LE_description = new QTextEdit(tab);
-        LE_description->setObjectName(QString::fromUtf8("LE_description"));
-        LE_description->setMaximumSize(QSize(16777215, 80));
-
-        gridLayout_3->addWidget(LE_description, 3, 1, 1, 1);
-
-        label_7 = new QLabel(tab);
-        label_7->setObjectName(QString::fromUtf8("label_7"));
-
-        gridLayout_3->addWidget(label_7, 4, 0, 1, 1);
 
         LE_type = new QLineEdit(tab);
         LE_type->setObjectName(QString::fromUtf8("LE_type"));
@@ -230,6 +232,10 @@ public:
         tabWidget->addTab(tab_2, QString());
 
         verticalLayout->addWidget(tabWidget);
+
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout->addItem(verticalSpacer);
 
 
         gridLayout_2->addWidget(frame, 0, 0, 1, 1);
@@ -272,11 +278,11 @@ public:
         label_2->setText(QCoreApplication::translate("MainWindow", "Starting Date", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Stock Name", nullptr));
         PB_plot->setText(QCoreApplication::translate("MainWindow", "Plot", nullptr));
-        label_8->setText(QCoreApplication::translate("MainWindow", "Symbol", nullptr));
+        label_7->setText(QCoreApplication::translate("MainWindow", "Type", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "Display Symbol", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "Currency", nullptr));
+        label_8->setText(QCoreApplication::translate("MainWindow", "Symbol", nullptr));
         label_6->setText(QCoreApplication::translate("MainWindow", "Description", nullptr));
-        label_7->setText(QCoreApplication::translate("MainWindow", "Type", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("MainWindow", "Details", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("MainWindow", "Other info", nullptr));
         menuFile->setTitle(QCoreApplication::translate("MainWindow", "File", nullptr));

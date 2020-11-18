@@ -81,14 +81,14 @@ void MainWindow::plotData()
 
     QStringList categories;
 
-    qInfo() << "Sizes: " << h_data.size() << " " << o_data.size() << " " << c_data.size();
-
     for (int i=0; i<numPlotPoints; i++)
     {
         QCandlestickSet* cdlSet = new QCandlestickSet(o_data[i], h_data[i], l_data[i], c_data[i], t_data[i]);
         series->append(cdlSet);
-        categories << QDateTime::fromMSecsSinceEpoch(cdlSet->timestamp()).toString("dd");
+        categories << QDateTime::fromSecsSinceEpoch(cdlSet->timestamp()).toString("dd.MM");
     }
+
+    qInfo() << categories;
 
     QChart *chart = new QChart();
     chart->addSeries(series);

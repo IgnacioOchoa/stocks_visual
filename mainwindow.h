@@ -55,6 +55,7 @@ private:
     QStringList displaysymbols;
 
     int numPlotPoints;
+    long long timestamp;
 
     QVector<double> c_data;
     QVector<double> h_data;
