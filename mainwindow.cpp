@@ -58,7 +58,9 @@ void MainWindow::getStockData()
     QDateTime initial_dt = ui->CB_initial_date->date().startOfDay();
     qint64 initial_date =initial_dt.toSecsSinceEpoch();
 
-    QString strUrl = "https://finnhub.io/api/v1/stock/candle?symbol=AAPL&resolution=D&from=" + QString::number(initial_date)
+    QString symbol = ui->CB_stockName->currentText();
+
+    QString strUrl = "https://finnhub.io/api/v1/stock/candle?symbol=" + symbol +"&resolution=D&from=" + QString::number(initial_date)
             + "&to=" + QString::number(final_date) + "&token=bubf32748v6ouqkj0ffg";
     QUrl url(strUrl);
     QNetworkReply* reply = manager.get(QNetworkRequest(url));
@@ -69,6 +71,7 @@ void MainWindow::getStockData()
 void MainWindow::populateCBStockInfo()
 {
     ui->CB_stockName->addItems(displaysymbols);
+    ui->CB_stockName->setCurrentIndex(ui->CB_stockName->findText("AAPL"));
 }
 
 void MainWindow::plotData()
@@ -88,11 +91,14 @@ void MainWindow::plotData()
         categories << QDateTime::fromSecsSinceEpoch(cdlSet->timestamp()).toString("dd.MM");
     }
 
-    qInfo() << categories;
+    QList<QCandlestickSet*> list = series->sets();
+
+    QString initialDate = QDateTime::fromSecsSinceEpoch(list[0]->timestamp()).toString("dd.MM");
+    QString finalDate = QDateTime::fromSecsSinceEpoch(list[list.size()-1]->timestamp()).toString("dd.MM");
 
     QChart *chart = new QChart();
     chart->addSeries(series);
-    chart->setTitle("Stock series from this date to this date");
+    chart->setTitle("Stock series from " + initialDate + " to " + finalDate);
     chart->setAnimationOptions(QChart::SeriesAnimations);
 
     chart->createDefaultAxes();
@@ -105,11 +111,10 @@ void MainWindow::plotData()
     axisY->setMin(axisY->min() * 0.99);
 
     chart->legend()->setVisible(true);
-    chart->legend()->setAlignment(Qt::AlignBottom);
+    chart->legend()->setAlignment(Qt::AlignRight);
 
     ui->GV_chartView->setChart(chart);
     ui->GV_chartView->setRenderHint(QPainter::Antialiasing);
-    qInfo() << "Reached the end of plot";
 }
 
 void MainWindow::DataReadyRead()
@@ -123,7 +128,6 @@ void MainWindow::DataReadyRead()
 
 void MainWindow::DataReplyFinished()
 {
-    qInfo() << "replyData Finished is executed";
     jdocData = QJsonDocument::fromJson(binaryDataReply);
     binaryDataReply.clear();
 
