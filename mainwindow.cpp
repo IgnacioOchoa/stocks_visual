@@ -77,6 +77,7 @@ void MainWindow::populateCBStockInfo()
 void MainWindow::plotData()
 {
     QCandlestickSeries* series = new QCandlestickSeries();
+    QLineSeries *lineSeries = new QLineSeries();
 
     series->setName("Stocks");
     series->setIncreasingColor(QColor(Qt::green));
@@ -88,7 +89,9 @@ void MainWindow::plotData()
     {
         QCandlestickSet* cdlSet = new QCandlestickSet(o_data[i], h_data[i], l_data[i], c_data[i], t_data[i]);
         series->append(cdlSet);
-        categories << QDateTime::fromSecsSinceEpoch(cdlSet->timestamp()).toString("dd.MM");
+        QDateTime moment = QDateTime::fromSecsSinceEpoch(cdlSet->timestamp());
+        categories << moment.toString("dd.MM");
+        lineSeries->append(moment.toMSecsSinceEpoch(),(h_data[i]+l_data[i])/2.0);
     }
 
     QList<QCandlestickSet*> list = series->sets();
@@ -105,13 +108,26 @@ void MainWindow::plotData()
 
     QBarCategoryAxis *axisX = qobject_cast<QBarCategoryAxis *>(chart->axes(Qt::Horizontal).at(0));
     axisX->setCategories(categories);
+    axisX->setVisible(false);
+
+    chart->addSeries(lineSeries);
+
+    QDateTimeAxis *DTaxisX = new QDateTimeAxis;
+    DTaxisX->setTickCount(10);
+    DTaxisX->setFormat("dd MM");
+    DTaxisX->setTitleText("Date");
+    chart->addAxis(DTaxisX, Qt::AlignBottom);
+    lineSeries->attachAxis(DTaxisX);
+
 
     QValueAxis *axisY = qobject_cast<QValueAxis *>(chart->axes(Qt::Vertical).at(0));
     axisY->setMax(axisY->max() * 1.01);
     axisY->setMin(axisY->min() * 0.99);
 
-    chart->legend()->setVisible(true);
-    chart->legend()->setAlignment(Qt::AlignRight);
+    lineSeries->hide();
+
+    chart->legend()->setVisible(false);
+    //chart->legend()->setAlignment(Qt::AlignRight);
 
     ui->GV_chartView->setChart(chart);
     ui->GV_chartView->setRenderHint(QPainter::Antialiasing);
@@ -154,7 +170,6 @@ void MainWindow::DataReplyFinished()
     v_data.clear();
 
     numPlotPoints = vl_t.size();
-    qInfo() << "numPlotPoints = " << numPlotPoints;
 
     for(int i=0; i<numPlotPoints; i++)
     {
@@ -166,8 +181,6 @@ void MainWindow::DataReplyFinished()
         v_data.append(vl_v[i].toLongLong());
     }
 
-    qInfo() << "h_data" << h_data;
-    qInfo() << "Time stamps:";
     for(int i=0; i<t_data.size(); i++)
     {
         QDateTime dateTime;
@@ -189,8 +202,6 @@ void MainWindow::InfoReadyRead()
 
 void MainWindow::InfoReplyFinished()
 {
-    qInfo()<<"replyInfo Finished is executed";
-
     jdocInfo = QJsonDocument::fromJson(binaryInfoReply);
     binaryInfoReply.clear();
     QJsonArray jsonArr = jdocInfo.array();
