@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QStringList>
 #include <QPushButton>
+#include <QMessageBox>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -55,6 +56,7 @@ private:
     QStringList displaysymbols;
 
     int numPlotPoints;
+    int expectedDataPoints;
     long long timestamp;
 
     QVector<double> c_data;

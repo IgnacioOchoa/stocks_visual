@@ -30,7 +30,7 @@ MainWindow::~MainWindow()
 void MainWindow::setDates()
 {
     ui->CB_final_date->setDate(QDate::currentDate());
-    ui->CB_initial_date->setDate(QDate::currentDate().addMonths(-3));
+    ui->CB_initial_date->setDate(QDate::currentDate().addMonths(-1));
 
     ui->CB_final_date->setDisplayFormat("dd.MM.yyyy");
     ui->CB_initial_date->setDisplayFormat("dd.MM.yyyy");
@@ -56,8 +56,14 @@ void MainWindow::getStockData()
     qint64 final_date = final_dt.toSecsSinceEpoch();
 
     QDateTime initial_dt = ui->CB_initial_date->date().startOfDay();
-    qint64 initial_date =initial_dt.toSecsSinceEpoch();
+    qint64 initial_date = initial_dt.toSecsSinceEpoch();
 
+    QDate loopDay = initial_dt.date();
+    expectedDataPoints = 0;
+    for (int i=0; i<initial_dt.daysTo(final_dt); i++)
+    {
+        if (loopDay.addDays(i).dayOfWeek() != 6 && loopDay.addDays(i).dayOfWeek() != 7) expectedDataPoints++;
+    }
     QString symbol = ui->CB_stockName->currentText();
 
     QString strUrl = "https://finnhub.io/api/v1/stock/candle?symbol=" + symbol +"&resolution=D&from=" + QString::number(initial_date)
@@ -87,11 +93,11 @@ void MainWindow::plotData()
 
     for (int i=0; i<numPlotPoints; i++)
     {
-        QCandlestickSet* cdlSet = new QCandlestickSet(o_data[i], h_data[i], l_data[i], c_data[i], t_data[i]);
+        QCandlestickSet* cdlSet = new QCandlestickSet(o_data[i], h_data[i], l_data[i], c_data[i], t_data[i],this);
         series->append(cdlSet);
         QDateTime moment = QDateTime::fromSecsSinceEpoch(cdlSet->timestamp());
         categories << moment.toString("dd.MM");
-        lineSeries->append(moment.toMSecsSinceEpoch(),(h_data[i]+l_data[i])/2.0);
+        lineSeries->append(moment.toMSecsSinceEpoch(),(o_data[i]+c_data[i])/2.0);
     }
 
     QList<QCandlestickSet*> list = series->sets();
@@ -124,7 +130,7 @@ void MainWindow::plotData()
     axisY->setMax(axisY->max() * 1.01);
     axisY->setMin(axisY->min() * 0.99);
 
-    lineSeries->hide();
+    //lineSeries->hide();
 
     chart->legend()->setVisible(false);
     //chart->legend()->setAlignment(Qt::AlignRight);
@@ -152,8 +158,6 @@ void MainWindow::DataReplyFinished()
     QJsonObject obj = jdocData.object();
     if(obj.isEmpty()) qInfo() << "El objeto salio mal";
 
-    qInfo() << obj.keys();
-
     QVariantMap vm = obj.toVariantMap();
     QVariantList vl_c = vm["c"].toList();
     QVariantList vl_h = vm["h"].toList();
@@ -170,6 +174,13 @@ void MainWindow::DataReplyFinished()
     v_data.clear();
 
     numPlotPoints = vl_t.size();
+    if (numPlotPoints != expectedDataPoints)
+    {
+        QMessageBox::warning(this,"Problem with data", "Could not retrieve"
+        " the correct amount of data points: Expected " + QString::number(expectedDataPoints) +
+        " points, but got " + QString::number(numPlotPoints) + " points");
+        return;
+    }
 
     for(int i=0; i<numPlotPoints; i++)
     {
@@ -185,7 +196,6 @@ void MainWindow::DataReplyFinished()
     {
         QDateTime dateTime;
         dateTime.setSecsSinceEpoch(t_data[i]);
-        qInfo() << dateTime.toString();
     }
 
     plotData();
