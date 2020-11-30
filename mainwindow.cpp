@@ -153,10 +153,29 @@ void MainWindow::DataReplyFinished()
     jdocData = QJsonDocument::fromJson(binaryDataReply);
     binaryDataReply.clear();
 
-    if (jdocData.isNull()) qInfo() << "The jdoc Data is null";
+    if (jdocData.isNull())
+    {
+        QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
+                             " data to a Json document");
+        return;
+    }
 
     QJsonObject obj = jdocData.object();
-    if(obj.isEmpty()) qInfo() << "El objeto salio mal";
+    {
+        QJsonArray arr = jdocData.array();
+        if (!arr.isEmpty())
+        {
+            QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
+                             " Json document into a Json Object because it is a Json Array");
+            return;
+        }
+        else
+        {
+            QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
+                             " Json document into a Json Object and it is not an array");
+            return;
+        }
+    }
 
     QVariantMap vm = obj.toVariantMap();
     QVariantList vl_c = vm["c"].toList();
