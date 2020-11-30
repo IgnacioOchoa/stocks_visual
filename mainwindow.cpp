@@ -47,6 +47,13 @@ void MainWindow:: getStocksInfo()
 void MainWindow::plotPressed()
 // Slot for catching the press of the Plot button
 {
+    initial_dt = ui->CB_initial_date->date().startOfDay();
+    final_dt = ui->CB_final_date->date().endOfDay();
+    numDays = initial_dt.daysTo(final_dt) + 1;
+    if (numDays < 1){
+        QMessageBox::warning(this,"Problem with dates", "The final date has to be later than the initial date");
+        return;
+    }
     getStockData();
 }
 
@@ -54,20 +61,18 @@ void MainWindow::getStockData()
 // Performs the dates calculation to set the dates for the url request. Also calculates the expected number of data points.
 // Constructs the complete url request and connects to API
 {
-    QDateTime final_dt = ui->CB_final_date->date().endOfDay();
     qint64 final_date = final_dt.toSecsSinceEpoch();
-
-    QDateTime initial_dt = ui->CB_initial_date->date().startOfDay();
     qint64 initial_date = initial_dt.toSecsSinceEpoch();
 
     QDate loopDay = initial_dt.date();
     expectedDataPoints = 0;
 
     //Sums up all the working days, leaving out saturday and sunday
-    for (int i=0; i<initial_dt.daysTo(final_dt); i++)
+    for (int i=0; i<numDays; i++)
     {
         if (loopDay.addDays(i).dayOfWeek() != 6 && loopDay.addDays(i).dayOfWeek() != 7) expectedDataPoints++;
     }
+
     QString symbol = ui->CB_stockName->currentText();
 
     QString strUrl = "https://finnhub.io/api/v1/stock/candle?symbol=" + symbol +"&resolution=D&from=" + QString::number(initial_date)
@@ -204,11 +209,11 @@ void MainWindow::DataReplyFinished()
     v_data.clear();
 
     numPlotPoints = vl_t.size();
-    if (numPlotPoints != expectedDataPoints)
+    if (numPlotPoints > expectedDataPoints)
     {
-        QMessageBox::warning(this,"Problem with data", "Could not retrieve"
-        " the correct amount of data points: Expected " + QString::number(expectedDataPoints) +
-        " points, but got " + QString::number(numPlotPoints) + " points");
+        QMessageBox::warning(this,"Problem with data", "Retrieved more points than expected: Expected "
+                             + QString::number(expectedDataPoints) +
+                            " points, but got " + QString::number(numPlotPoints) + " points");
         return;
     }
 

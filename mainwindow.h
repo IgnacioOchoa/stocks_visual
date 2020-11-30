@@ -57,7 +57,11 @@ private:
 
     int numPlotPoints;
     int expectedDataPoints;
+    int numDays;
     long long timestamp;
+
+    QDateTime final_dt;
+    QDateTime initial_dt;
 
     QVector<double> c_data;
     QVector<double> h_data;
