@@ -162,6 +162,7 @@ public:
 
         PB_plot = new QPushButton(groupBox);
         PB_plot->setObjectName(QString::fromUtf8("PB_plot"));
+        PB_plot->setEnabled(false);
 
         gridLayout->addWidget(PB_plot, 3, 1, 1, 1);
 

@@ -244,7 +244,7 @@ void MainWindow::InfoReplyFinished()
 //    Keys: ("currency", "description", "displaySymbol", "symbol", "type")
 {
     jdocInfo = QJsonDocument::fromJson(binaryInfoReply);
-    if (jdocData.isNull())
+    if (jdocInfo.isNull())
     {
         QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
                              " general info data to a Json document");
@@ -280,6 +280,8 @@ void MainWindow::InfoReplyFinished()
     }
 
     populateCBStockInfo();
+    ui->PB_plot->setEnabled(true);
+    ui->CB_stockName->setEnabled(true);
 
 }
 
