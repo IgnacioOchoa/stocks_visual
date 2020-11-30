@@ -6,15 +6,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //Prepare all the information
 
-    //Connect to the API and get stock names
     getStocksInfo();
-    //Set ending date to current date
     setDates();
-    //Set starting date to 3 months before the current date
+
     connect(ui->CB_stockName,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::stockCBchanged);
     connect(ui->PB_plot, &QPushButton::pressed, this, &MainWindow::plotPressed);
+
     ui->LE_currency->setReadOnly(true);
     ui->LE_symbol->setReadOnly(true);
     ui->LE_type->setReadOnly(true);
@@ -28,6 +26,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::setDates()
+// Populates the dates combo boxes and sets a proper date format
 {
     ui->CB_final_date->setDate(QDate::currentDate());
     ui->CB_initial_date->setDate(QDate::currentDate().addMonths(-1));
@@ -37,6 +36,7 @@ void MainWindow::setDates()
 }
 
 void MainWindow:: getStocksInfo()
+// Prepare the connections for getting the list of all available stocks, this is done automatically upon startup
 {
     QNetworkReply* reply = manager.get(QNetworkRequest(QUrl("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=bubf32748v6ouqkj0ffg")));
     connect(reply, &QNetworkReply::readyRead, this, &MainWindow::InfoReadyRead);
@@ -45,13 +45,15 @@ void MainWindow:: getStocksInfo()
 
 
 void MainWindow::plotPressed()
+// Slot for catching the press of the Plot button
 {
     getStockData();
 }
 
 void MainWindow::getStockData()
+// Performs the dates calculation to set the dates for the url request. Also calculates the expected number of data points.
+// Constructs the complete url request and connects to API
 {
-
     QDateTime final_dt = ui->CB_final_date->date().endOfDay();
     qint64 final_date = final_dt.toSecsSinceEpoch();
 
@@ -60,6 +62,8 @@ void MainWindow::getStockData()
 
     QDate loopDay = initial_dt.date();
     expectedDataPoints = 0;
+
+    //Sums up all the working days, leaving out saturday and sunday
     for (int i=0; i<initial_dt.daysTo(final_dt); i++)
     {
         if (loopDay.addDays(i).dayOfWeek() != 6 && loopDay.addDays(i).dayOfWeek() != 7) expectedDataPoints++;
@@ -75,12 +79,15 @@ void MainWindow::getStockData()
 }
 
 void MainWindow::populateCBStockInfo()
+//  Once the general info about all stocks is received and processed, it populates the stocks combo box
+//  and sets the default one
 {
     ui->CB_stockName->addItems(displaysymbols);
     ui->CB_stockName->setCurrentIndex(ui->CB_stockName->findText("AAPL"));
 }
 
 void MainWindow::plotData()
+// Once the information about the specific stock has been received and processed, this functions plots the data
 {
     QCandlestickSeries* series = new QCandlestickSeries();
     QLineSeries *lineSeries = new QLineSeries();
@@ -140,6 +147,7 @@ void MainWindow::plotData()
 }
 
 void MainWindow::DataReadyRead()
+// Slot called when a new chunk of data for a particular stock is received.
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply *>(sender());
     if(reply)
@@ -149,34 +157,37 @@ void MainWindow::DataReadyRead()
 }
 
 void MainWindow::DataReplyFinished()
+// Slot called when the stock data is completely received. Performs some consistency checks.
 {
     jdocData = QJsonDocument::fromJson(binaryDataReply);
-    binaryDataReply.clear();
+    binaryDataReply.clear();  // If another stock data is requested we need the buffer clean
 
     if (jdocData.isNull())
     {
         QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
-                             " data to a Json document");
+                             " stock data to a Json document");
         return;
     }
 
     QJsonObject obj = jdocData.object();
+    if (obj.isEmpty())
     {
         QJsonArray arr = jdocData.array();
         if (!arr.isEmpty())
         {
             QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
-                             " Json document into a Json Object because it is a Json Array");
+                             " stock Json document into a Json Object because it is a Json Array");
             return;
         }
         else
         {
             QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
-                             " Json document into a Json Object and it is not an array");
+                             " stock Json document into a Json Object and it is not an array either");
             return;
         }
     }
 
+    // Prepare containers for receiving the Json data
     QVariantMap vm = obj.toVariantMap();
     QVariantList vl_c = vm["c"].toList();
     QVariantList vl_h = vm["h"].toList();
@@ -201,6 +212,7 @@ void MainWindow::DataReplyFinished()
         return;
     }
 
+    // Populate internal data containers
     for(int i=0; i<numPlotPoints; i++)
     {
         c_data.append(vl_c[i].toDouble());
@@ -211,16 +223,11 @@ void MainWindow::DataReplyFinished()
         v_data.append(vl_v[i].toLongLong());
     }
 
-    for(int i=0; i<t_data.size(); i++)
-    {
-        QDateTime dateTime;
-        dateTime.setSecsSinceEpoch(t_data[i]);
-    }
-
     plotData();
 }
 
 void MainWindow::InfoReadyRead()
+// Slot called when a new chunk of general info data is received
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply *>(sender());
     if(reply)
@@ -230,14 +237,37 @@ void MainWindow::InfoReadyRead()
 }
 
 void MainWindow::InfoReplyFinished()
+// Slot called when the info data is completely received. Performs some consistency checks.
+// After processing updates the stocks combo box
+//    Currencies:  ("USD", "")
+//    Types:  ("EQS", "", "ETF", "DR", "UNT", "STP", "WAR", "PRF", "BND", "TRT", "SP", "PFS")
+//    Keys: ("currency", "description", "displaySymbol", "symbol", "type")
 {
     jdocInfo = QJsonDocument::fromJson(binaryInfoReply);
-    binaryInfoReply.clear();
+    if (jdocData.isNull())
+    {
+        QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
+                             " general info data to a Json document");
+        return;
+    }
+    binaryInfoReply.clear();  // If another info data is requested we need the buffer clean
     QJsonArray jsonArr = jdocInfo.array();
-
-    //Currencies:  ("USD", "")
-    //Types:  ("EQS", "", "ETF", "DR", "UNT", "STP", "WAR", "PRF", "BND", "TRT", "SP", "PFS")
-    //Keys: ("currency", "description", "displaySymbol", "symbol", "type")
+    if (jsonArr.isEmpty())
+    {
+        QJsonObject obj = jdocInfo.object();
+        if (!obj.isEmpty())
+        {
+            QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
+                             " general info data Json document into a Json Array because it is a Json Object");
+            return;
+        }
+        else
+        {
+            QMessageBox::warning(this,"Problem with data", "Could not transform the provided"
+                             " stock Json document into a Json Array and it is not an object either");
+            return;
+        }
+    }
 
     for (int i=0; i<jsonArr.size(); i++)
     {
@@ -254,6 +284,7 @@ void MainWindow::InfoReplyFinished()
 }
 
 void MainWindow::stockCBchanged(int indx)
+// Slot called when another stock in the combo box is selected. It fills up the info tab.
 {
     ui->LE_currency->setText(currencies[indx]);
     ui->LE_symbol->setText(symbols[indx]);
