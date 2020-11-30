@@ -6,7 +6,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    statLabel = new QLabel();
+    statBar = this->statusBar();
+    statBar->addWidget(statLabel);
     getStocksInfo();
     setDates();
 
@@ -216,6 +218,9 @@ void MainWindow::DataReplyFinished()
                             " points, but got " + QString::number(numPlotPoints) + " points");
         return;
     }
+
+    statLabel->setText("Expected " + QString::number(expectedDataPoints) +
+                      " points, got " + QString::number(numPlotPoints) + " points");
 
     // Populate internal data containers
     for(int i=0; i<numPlotPoints; i++)

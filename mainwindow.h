@@ -42,6 +42,8 @@ private:
     void plotData();
 
     Ui::MainWindow *ui;
+    QStatusBar * statBar;
+    QLabel * statLabel;
     QNetworkAccessManager manager;
     QStringList stockNames;
     QByteArray binaryInfoReply;
