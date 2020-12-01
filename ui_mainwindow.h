@@ -19,12 +19,13 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTextEdit>
@@ -57,18 +58,21 @@ public:
     QTabWidget *tabWidget;
     QWidget *tab;
     QGridLayout *gridLayout_3;
-    QLineEdit *LE_currency;
     QLabel *label_7;
-    QTextEdit *LE_description;
-    QLineEdit *LE_symbol;
     QLabel *label_4;
+    QTextEdit *LE_description;
+    QLabel *label_6;
+    QLineEdit *LE_currency;
+    QLineEdit *LE_symbol;
     QLabel *label_5;
     QLabel *label_8;
     QLineEdit *LE_displaysymbol;
-    QLabel *label_6;
     QLineEdit *LE_type;
     QWidget *tab_2;
-    QSpacerItem *verticalSpacer;
+    QScrollArea *scrollArea;
+    QWidget *scrollAreaWidgetContents_2;
+    QVBoxLayout *verticalLayout_3;
+    QListWidget *LW_daysList;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuEdit;
@@ -176,15 +180,15 @@ public:
         tab->setObjectName(QString::fromUtf8("tab"));
         gridLayout_3 = new QGridLayout(tab);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        LE_currency = new QLineEdit(tab);
-        LE_currency->setObjectName(QString::fromUtf8("LE_currency"));
-
-        gridLayout_3->addWidget(LE_currency, 2, 1, 1, 1);
-
         label_7 = new QLabel(tab);
         label_7->setObjectName(QString::fromUtf8("label_7"));
 
         gridLayout_3->addWidget(label_7, 4, 0, 1, 1);
+
+        label_4 = new QLabel(tab);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+
+        gridLayout_3->addWidget(label_4, 1, 0, 1, 1);
 
         LE_description = new QTextEdit(tab);
         LE_description->setObjectName(QString::fromUtf8("LE_description"));
@@ -192,15 +196,20 @@ public:
 
         gridLayout_3->addWidget(LE_description, 3, 1, 1, 1);
 
+        label_6 = new QLabel(tab);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+
+        gridLayout_3->addWidget(label_6, 3, 0, 1, 1);
+
+        LE_currency = new QLineEdit(tab);
+        LE_currency->setObjectName(QString::fromUtf8("LE_currency"));
+
+        gridLayout_3->addWidget(LE_currency, 2, 1, 1, 1);
+
         LE_symbol = new QLineEdit(tab);
         LE_symbol->setObjectName(QString::fromUtf8("LE_symbol"));
 
         gridLayout_3->addWidget(LE_symbol, 0, 1, 1, 1);
-
-        label_4 = new QLabel(tab);
-        label_4->setObjectName(QString::fromUtf8("label_4"));
-
-        gridLayout_3->addWidget(label_4, 1, 0, 1, 1);
 
         label_5 = new QLabel(tab);
         label_5->setObjectName(QString::fromUtf8("label_5"));
@@ -217,11 +226,6 @@ public:
 
         gridLayout_3->addWidget(LE_displaysymbol, 1, 1, 1, 1);
 
-        label_6 = new QLabel(tab);
-        label_6->setObjectName(QString::fromUtf8("label_6"));
-
-        gridLayout_3->addWidget(label_6, 3, 0, 1, 1);
-
         LE_type = new QLineEdit(tab);
         LE_type->setObjectName(QString::fromUtf8("LE_type"));
 
@@ -234,9 +238,22 @@ public:
 
         verticalLayout->addWidget(tabWidget);
 
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        scrollArea = new QScrollArea(frame);
+        scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
+        scrollArea->setWidgetResizable(true);
+        scrollAreaWidgetContents_2 = new QWidget();
+        scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 357, 107));
+        verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents_2);
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        LW_daysList = new QListWidget(scrollAreaWidgetContents_2);
+        LW_daysList->setObjectName(QString::fromUtf8("LW_daysList"));
 
-        verticalLayout->addItem(verticalSpacer);
+        verticalLayout_3->addWidget(LW_daysList);
+
+        scrollArea->setWidget(scrollAreaWidgetContents_2);
+
+        verticalLayout->addWidget(scrollArea);
 
 
         gridLayout_2->addWidget(frame, 0, 0, 1, 1);
@@ -281,9 +298,9 @@ public:
         PB_plot->setText(QCoreApplication::translate("MainWindow", "Plot", nullptr));
         label_7->setText(QCoreApplication::translate("MainWindow", "Type", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "Display Symbol", nullptr));
+        label_6->setText(QCoreApplication::translate("MainWindow", "Description", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "Currency", nullptr));
         label_8->setText(QCoreApplication::translate("MainWindow", "Symbol", nullptr));
-        label_6->setText(QCoreApplication::translate("MainWindow", "Description", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("MainWindow", "Details", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("MainWindow", "Other info", nullptr));
         menuFile->setTitle(QCoreApplication::translate("MainWindow", "File", nullptr));

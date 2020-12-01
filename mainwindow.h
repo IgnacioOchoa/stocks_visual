@@ -39,6 +39,7 @@ private:
     void getStockNames(QStringList&);
     void getStockData();
     void populateCBStockInfo();
+    void reportDataDays();
     void plotData();
 
     Ui::MainWindow *ui;
@@ -58,9 +59,9 @@ private:
     QStringList displaysymbols;
 
     int numPlotPoints;
-    int expectedDataPoints;
     int numDays;
     long long timestamp;
+    QString searchSymbol;
 
     QDateTime final_dt;
     QDateTime initial_dt;

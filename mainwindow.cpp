@@ -66,18 +66,9 @@ void MainWindow::getStockData()
     qint64 final_date = final_dt.toSecsSinceEpoch();
     qint64 initial_date = initial_dt.toSecsSinceEpoch();
 
-    QDate loopDay = initial_dt.date();
-    expectedDataPoints = 0;
+    searchSymbol = ui->CB_stockName->currentText();
 
-    //Sums up all the working days, leaving out saturday and sunday
-    for (int i=0; i<numDays; i++)
-    {
-        if (loopDay.addDays(i).dayOfWeek() != 6 && loopDay.addDays(i).dayOfWeek() != 7) expectedDataPoints++;
-    }
-
-    QString symbol = ui->CB_stockName->currentText();
-
-    QString strUrl = "https://finnhub.io/api/v1/stock/candle?symbol=" + symbol +"&resolution=D&from=" + QString::number(initial_date)
+    QString strUrl = "https://finnhub.io/api/v1/stock/candle?symbol=" + searchSymbol +"&resolution=D&from=" + QString::number(initial_date)
             + "&to=" + QString::number(final_date) + "&token=bubf32748v6ouqkj0ffg";
     QUrl url(strUrl);
     QNetworkReply* reply = manager.get(QNetworkRequest(url));
@@ -91,6 +82,16 @@ void MainWindow::populateCBStockInfo()
 {
     ui->CB_stockName->addItems(displaysymbols);
     ui->CB_stockName->setCurrentIndex(ui->CB_stockName->findText("AAPL"));
+}
+
+void MainWindow::reportDataDays()
+{
+    QDateTime moment;
+    foreach (long long x, t_data)
+    {
+        moment = QDateTime::fromSecsSinceEpoch(x);
+        ui->LW_daysList->addItem(moment.toString("ddd \tdd \tMMM"));
+    }
 }
 
 void MainWindow::plotData()
@@ -211,16 +212,6 @@ void MainWindow::DataReplyFinished()
     v_data.clear();
 
     numPlotPoints = vl_t.size();
-    if (numPlotPoints > expectedDataPoints)
-    {
-        QMessageBox::warning(this,"Problem with data", "Retrieved more points than expected: Expected "
-                             + QString::number(expectedDataPoints) +
-                            " points, but got " + QString::number(numPlotPoints) + " points");
-        return;
-    }
-
-    statLabel->setText("Expected " + QString::number(expectedDataPoints) +
-                      " points, got " + QString::number(numPlotPoints) + " points");
 
     // Populate internal data containers
     for(int i=0; i<numPlotPoints; i++)
@@ -233,6 +224,9 @@ void MainWindow::DataReplyFinished()
         v_data.append(vl_v[i].toLongLong());
     }
 
+    statLabel->setText("Data from " + searchSymbol + " loaded correctly");
+
+    reportDataDays();
     plotData();
 }
 

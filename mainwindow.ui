@@ -132,13 +132,17 @@
            <string>Details</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="LE_currency"/>
-           </item>
            <item row="4" column="0">
             <widget class="QLabel" name="label_7">
              <property name="text">
               <string>Type</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Display Symbol</string>
              </property>
             </widget>
            </item>
@@ -152,15 +156,18 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="LE_symbol"/>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_4">
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>Display Symbol</string>
+              <string>Description</string>
              </property>
             </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="LE_currency"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="LE_symbol"/>
            </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_5">
@@ -179,13 +186,6 @@
            <item row="1" column="1">
             <widget class="QLineEdit" name="LE_displaysymbol"/>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Description</string>
-             </property>
-            </widget>
-           </item>
            <item row="4" column="1">
             <widget class="QLineEdit" name="LE_type"/>
            </item>
@@ -199,17 +199,26 @@
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>357</width>
+            <height>107</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QListWidget" name="LW_daysList"/>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </widget>
