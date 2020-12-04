@@ -97,57 +97,73 @@ void MainWindow::reportDataDays()
 void MainWindow::plotData()
 // Once the information about the specific stock has been received and processed, this functions plots the data
 {
-    QCandlestickSeries* series = new QCandlestickSeries();
+    QCandlestickSeries* candleSeries = new QCandlestickSeries();
     QLineSeries *lineSeries = new QLineSeries();
 
-    series->setName("Stocks");
-    series->setIncreasingColor(QColor(Qt::green));
-    series->setDecreasingColor(QColor(Qt::red));
+    candleSeries->setName("Stocks");
+    candleSeries->setIncreasingColor(QColor(Qt::green));
+    candleSeries->setDecreasingColor(QColor(Qt::red));
 
     QStringList categories;
 
     for (int i=0; i<numPlotPoints; i++)
     {
         QCandlestickSet* cdlSet = new QCandlestickSet(o_data[i], h_data[i], l_data[i], c_data[i], t_data[i],this);
-        series->append(cdlSet);
+        candleSeries->append(cdlSet);
         QDateTime moment = QDateTime::fromSecsSinceEpoch(cdlSet->timestamp());
-        categories << moment.toString("dd.MM");
-        lineSeries->append(moment.toMSecsSinceEpoch(),(o_data[i]+c_data[i])/2.0);
+        categories << moment.toString("dd MMM");
+        lineSeries->append(i+0.5,c_data[i]);
+        ui->TE_messages->appendPlainText("ddd \tdd \tMMM: " + QString::number(c_data[i]));
     }
 
-    QList<QCandlestickSet*> list = series->sets();
+    QList<QCandlestickSet*> list = candleSeries->sets();
 
-    QString initialDate = QDateTime::fromSecsSinceEpoch(list[0]->timestamp()).toString("dd.MM");
-    QString finalDate = QDateTime::fromSecsSinceEpoch(list[list.size()-1]->timestamp()).toString("dd.MM");
+    QString initialDate = QDateTime::fromSecsSinceEpoch(list[0]->timestamp()).toString("ddd dd MMM");
+    QString finalDate = QDateTime::fromSecsSinceEpoch(list[list.size()-1]->timestamp()).toString("ddd dd MMM");
+
+    //QChart
 
     QChart *chart = new QChart();
-    chart->addSeries(series);
+    chart->addSeries(candleSeries);
     chart->setTitle("Stock series from " + initialDate + " to " + finalDate);
     chart->setAnimationOptions(QChart::SeriesAnimations);
-
+    //when you create default axis, it makes the connections between the axis and the already added series
+    //candleSeries will use the default axis, but lineSeries will not
     chart->createDefaultAxes();
+
+    //Axis X for BarCategory
 
     QBarCategoryAxis *axisX = qobject_cast<QBarCategoryAxis *>(chart->axes(Qt::Horizontal).at(0));
     axisX->setCategories(categories);
-    axisX->setVisible(false);
 
-    chart->addSeries(lineSeries);
+    //Axis X for Line Series
 
-    QDateTimeAxis *DTaxisX = new QDateTimeAxis;
-    DTaxisX->setTickCount(10);
-    DTaxisX->setFormat("dd MM");
-    DTaxisX->setTitleText("Date");
-    chart->addAxis(DTaxisX, Qt::AlignBottom);
-    lineSeries->attachAxis(DTaxisX);
+    QValueAxis * xValAx = new QValueAxis();
+    xValAx->setMin(0);
+    xValAx->setMax(numPlotPoints);
 
+    chart->addAxis(xValAx, Qt::AlignBottom);
+    xValAx->setVisible(false);
+
+    //Axis Y
 
     QValueAxis *axisY = qobject_cast<QValueAxis *>(chart->axes(Qt::Vertical).at(0));
-    axisY->setMax(axisY->max() * 1.01);
-    axisY->setMin(axisY->min() * 0.99);
+    int max = ceil(axisY->max()*1.01);
+    int min = floor(axisY->min()*0.99);
+    axisY->setMax(max);
+    axisY->setMin(min);
+    axisY->setTickCount(max-min+1);
 
-    //lineSeries->hide();
+    //The lineSeries has to be added to the chart before axis can be attached to the series
+    chart->addSeries(lineSeries);
+
+    lineSeries->setColor("black");
+    lineSeries->attachAxis(axisY);
+    lineSeries->attachAxis(xValAx);
+    lineSeries->setPointsVisible(true);
 
     chart->legend()->setVisible(false);
+
     //chart->legend()->setAlignment(Qt::AlignRight);
 
     ui->GV_chartView->setChart(chart);

@@ -43,7 +43,7 @@ public:
     QFrame *frame_2;
     QVBoxLayout *verticalLayout_2;
     QChartView *GV_chartView;
-    QPlainTextEdit *plainTextEdit;
+    QPlainTextEdit *TE_messages;
     QFrame *frame;
     QVBoxLayout *verticalLayout;
     QGroupBox *groupBox;
@@ -105,15 +105,15 @@ public:
 
         verticalLayout_2->addWidget(GV_chartView);
 
-        plainTextEdit = new QPlainTextEdit(frame_2);
-        plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
+        TE_messages = new QPlainTextEdit(frame_2);
+        TE_messages->setObjectName(QString::fromUtf8("TE_messages"));
         QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(plainTextEdit->sizePolicy().hasHeightForWidth());
-        plainTextEdit->setSizePolicy(sizePolicy1);
+        sizePolicy1.setHeightForWidth(TE_messages->sizePolicy().hasHeightForWidth());
+        TE_messages->setSizePolicy(sizePolicy1);
 
-        verticalLayout_2->addWidget(plainTextEdit);
+        verticalLayout_2->addWidget(TE_messages);
 
 
         gridLayout_2->addWidget(frame_2, 0, 1, 1, 1);
@@ -243,7 +243,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 357, 107));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 374, 114));
         verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents_2);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
         LW_daysList = new QListWidget(scrollAreaWidgetContents_2);
