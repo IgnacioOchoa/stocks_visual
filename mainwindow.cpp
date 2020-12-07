@@ -104,16 +104,11 @@ void MainWindow::plotData()
     candleSeries->setIncreasingColor(QColor(Qt::green));
     candleSeries->setDecreasingColor(QColor(Qt::red));
 
-    QStringList categories;
-
     for (int i=0; i<numPlotPoints; i++)
     {
         QCandlestickSet* cdlSet = new QCandlestickSet(o_data[i], h_data[i], l_data[i], c_data[i], t_data[i],this);
         candleSeries->append(cdlSet);
-        QDateTime moment = QDateTime::fromSecsSinceEpoch(cdlSet->timestamp());
-        categories << moment.toString("dd MMM");
         lineSeries->append(i+0.5,c_data[i]);
-        ui->TE_messages->appendPlainText("ddd \tdd \tMMM: " + QString::number(c_data[i]));
     }
 
     QList<QCandlestickSet*> list = candleSeries->sets();
@@ -121,53 +116,141 @@ void MainWindow::plotData()
     QString initialDate = QDateTime::fromSecsSinceEpoch(list[0]->timestamp()).toString("ddd dd MMM");
     QString finalDate = QDateTime::fromSecsSinceEpoch(list[list.size()-1]->timestamp()).toString("ddd dd MMM");
 
-    //QChart
+    //Creation of QChart
 
-    QChart *chart = new QChart();
-    chart->addSeries(candleSeries);
-    chart->setTitle("Stock series from " + initialDate + " to " + finalDate);
-    chart->setAnimationOptions(QChart::SeriesAnimations);
+    mainChart = new QChart();
+    mainChart->setTitle("Stock series from " + initialDate + " to " + finalDate);
+    mainChart->setAnimationOptions(QChart::SeriesAnimations);
+
     //when you create default axis, it makes the connections between the axis and the already added series
     //candleSeries will use the default axis, but lineSeries will not
-    chart->createDefaultAxes();
+    //chart->createDefaultAxes();
 
-    //Axis X for BarCategory
+    //Creation of QAxes
 
-    QBarCategoryAxis *axisX = qobject_cast<QBarCategoryAxis *>(chart->axes(Qt::Horizontal).at(0));
-    axisX->setCategories(categories);
+    barCatAxisX = new QBarCategoryAxis;
+    mainChart->addAxis(barCatAxisX, Qt::AlignBottom);
+    barCatAxisX->setVisible(false);
+
+    mainAxisX = new QCategoryAxis;
+    weekAxis = new QCategoryAxis;
+    calculateXticks();
+    calculateWeekLines();
+    mainChart->addAxis(mainAxisX, Qt::AlignBottom);
+    mainChart->addAxis(weekAxis, Qt::AlignBottom);
 
     //Axis X for Line Series
 
-    QValueAxis * xValAx = new QValueAxis();
-    xValAx->setMin(0);
-    xValAx->setMax(numPlotPoints);
-
-    chart->addAxis(xValAx, Qt::AlignBottom);
-    xValAx->setVisible(false);
+    //QValueAxis * xValAx = new QValueAxis();
+    //xValAx->setMin(0);
+    //xValAx->setMax(numPlotPoints);
+    //chart->addAxis(xValAx, Qt::AlignBottom);
+    //xValAx->setVisible(false);
 
     //Axis Y
 
-    QValueAxis *axisY = qobject_cast<QValueAxis *>(chart->axes(Qt::Vertical).at(0));
-    int max = ceil(axisY->max()*1.01);
-    int min = floor(axisY->min()*0.99);
-    axisY->setMax(max);
-    axisY->setMin(min);
-    axisY->setTickCount(max-min+1);
+    QValueAxis *axisY = new QValueAxis;
+
+    mainChart->addAxis(axisY, Qt::AlignLeft);
 
     //The lineSeries has to be added to the chart before axis can be attached to the series
-    chart->addSeries(lineSeries);
+    mainChart->addSeries(candleSeries);
+    mainChart->addSeries(lineSeries);
+
+    candleSeries->attachAxis(barCatAxisX);
+    candleSeries->attachAxis(axisY);
 
     lineSeries->setColor("black");
-    lineSeries->attachAxis(axisY);
-    lineSeries->attachAxis(xValAx);
+    lineSeries->attachAxis(mainAxisX);
     lineSeries->setPointsVisible(true);
+    lineSeries->attachAxis(axisY);
 
-    chart->legend()->setVisible(false);
+    calculateYticks(axisY);
+
+    mainChart->legend()->setVisible(false);
 
     //chart->legend()->setAlignment(Qt::AlignRight);
 
-    ui->GV_chartView->setChart(chart);
+    ui->GV_chartView->setChart(mainChart);
     ui->GV_chartView->setRenderHint(QPainter::Antialiasing);
+}
+
+void MainWindow::calculateYticks(QValueAxis* axisY)
+{
+    int max = ceil(axisY->max()*1.01);
+    int min = floor(axisY->min()*0.99);
+    int numtks = max-min+1;
+    qInfo() << "max = " << max;
+    qInfo() << "min = " << min;
+
+    while (numtks > 15)
+    {
+        qInfo() << "numtks = " << numtks;
+        if (numtks%2 == 1) numtks = (numtks-1)/2 + 1;
+        else {
+            numtks++;
+            max++;
+        }
+    }
+
+    axisY->setMax(max);
+    axisY->setMin(min);
+    axisY->setTickCount(numtks);
+}
+
+void MainWindow::calculateXticks()
+{
+    int days = t_data.size();
+    mainAxisX->setMin(0);
+    qInfo() << "numDays = " << numDays;
+    if (numDays < 25) {
+        for (int i=0; i<days; i++)
+        {
+            mainAxisX->append(QDateTime::fromSecsSinceEpoch(t_data[i]).toString("dd MMM"), i+1);
+        }
+        mainAxisX->setMax(days);
+    }
+    else
+    {
+        int prevDay = QDateTime::fromSecsSinceEpoch(t_data.first()).date().day();
+        int thisDay;
+        mainAxisX->setStartValue(0);
+
+        for (int i=0; i<days; i++)
+        {
+            thisDay = QDateTime::fromSecsSinceEpoch(t_data[i]).date().day();
+            qInfo() << "thisDay = " << thisDay;
+            if (thisDay<prevDay) //change in month
+            {
+                qInfo() << "Change in month";
+                mainAxisX->append(QDateTime::fromSecsSinceEpoch(t_data[i-1]).toString("MMM"), i);
+            }
+            prevDay = thisDay;
+        }
+        mainAxisX->append(QDateTime::fromSecsSinceEpoch(t_data.last()).toString("MMM"),days);
+
+        mainAxisX->setMax(days);
+    }
+}
+
+void MainWindow::calculateWeekLines()
+{
+    int days = t_data.size();
+    int prevWeek = QDateTime::fromSecsSinceEpoch(t_data.first()).date().weekNumber();
+    int thisWeek;
+    for(int i=0; i<days; i++)
+    {
+        thisWeek = QDateTime::fromSecsSinceEpoch(t_data[i]).date().weekNumber();
+        if (thisWeek>prevWeek)
+        {
+            weekAxis->append(QString::number(thisWeek),i);
+            prevWeek = thisWeek;
+        }
+    }
+    weekAxis->append(QString::number(thisWeek),days);
+    weekAxis->setMax(days);
+    weekAxis->setLabelsVisible(false);
+    weekAxis->setLineVisible(false);
 }
 
 void MainWindow::DataReadyRead()

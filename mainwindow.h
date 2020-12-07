@@ -41,6 +41,9 @@ private:
     void populateCBStockInfo();
     void reportDataDays();
     void plotData();
+    void calculateYticks(QValueAxis* axisY);
+    void calculateXticks();
+    void calculateWeekLines();
 
     Ui::MainWindow *ui;
     QStatusBar * statBar;
@@ -72,6 +75,11 @@ private:
     QVector<double> o_data;
     QVector<long long> t_data;
     QVector<long long> v_data;
+
+    QChart *mainChart;
+    QBarCategoryAxis *barCatAxisX;
+    QCategoryAxis *mainAxisX;
+    QCategoryAxis *weekAxis;
 
 private slots:
     void InfoReadyRead();
