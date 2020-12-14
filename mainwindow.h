@@ -55,6 +55,8 @@ private:
     QJsonDocument jdocInfo;
     QJsonDocument jdocData;
 
+    QGraphicsScene* mainScene;
+
     QStringList symbols;
     QStringList types;
     QStringList currencies;
@@ -88,6 +90,9 @@ private slots:
     void DataReplyFinished();
     void stockCBchanged(int);
     void plotPressed();
+    void on_PB_zoomIn_clicked();
+    void on_PB_zoomOut_clicked();
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // MAINWINDOW_H

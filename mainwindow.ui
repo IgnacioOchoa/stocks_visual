@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
-    <height>594</height>
+    <width>1042</width>
+    <height>681</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,19 +29,57 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QChartView" name="GV_chartView"/>
+        <widget class="QGraphicsView" name="GV_chartView"/>
        </item>
        <item>
-        <widget class="QPlainTextEdit" name="TE_messages">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QPushButton" name="PB_zoomIn">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="PB_zoomOut">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPlainTextEdit" name="TE_messages">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -132,10 +170,17 @@
            <string>Details</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_7">
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>Type</string>
+              <string>Description</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Currency</string>
              </property>
             </widget>
            </item>
@@ -145,6 +190,22 @@
               <string>Display Symbol</string>
              </property>
             </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Type</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="LE_displaysymbol"/>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="LE_currency"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="LE_symbol"/>
            </item>
            <item row="3" column="1">
             <widget class="QTextEdit" name="LE_description">
@@ -156,35 +217,12 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Description</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="LE_currency"/>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="LE_symbol"/>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Currency</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label_8">
              <property name="text">
               <string>Symbol</string>
              </property>
             </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="LE_displaysymbol"/>
            </item>
            <item row="4" column="1">
             <widget class="QLineEdit" name="LE_type"/>
@@ -209,7 +247,7 @@
             <x>0</x>
             <y>0</y>
             <width>374</width>
-            <height>114</height>
+            <height>177</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -230,7 +268,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>975</width>
+     <width>1042</width>
      <height>25</height>
     </rect>
    </property>
@@ -261,13 +299,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QChartView</class>
-   <extends>QGraphicsView</extends>
-   <header>QtCharts</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

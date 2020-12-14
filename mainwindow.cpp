@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->CB_stockName,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::stockCBchanged);
     connect(ui->PB_plot, &QPushButton::pressed, this, &MainWindow::plotPressed);
 
+    mainScene = new QGraphicsScene(this);
+
     ui->LE_currency->setReadOnly(true);
     ui->LE_symbol->setReadOnly(true);
     ui->LE_type->setReadOnly(true);
@@ -171,8 +173,23 @@ void MainWindow::plotData()
 
     //chart->legend()->setAlignment(Qt::AlignRight);
 
-    ui->GV_chartView->setChart(mainChart);
-    ui->GV_chartView->setRenderHint(QPainter::Antialiasing);
+    mainScene->addItem(mainChart);
+    //mainChart->resetTransform();
+    ui->GV_chartView->setScene(mainScene);
+    ui->GV_chartView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    mainChart->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    mainChart->resize(800,800);
+    qInfo() << "mainScene->itemsBoundingRect() = " << mainScene->itemsBoundingRect();
+    qInfo() << "GraphicsView->sceneRect() = " << ui->GV_chartView->sceneRect();
+    //mainScene->addRect(-0.5, -0.5, 99.5, 147.5);
+    //ui->GV_chartView->setSceneRect(QRectF(-50,-50,200,200));
+    qInfo() << "GraphicsView->sceneRect() = " << ui->GV_chartView->sceneRect();
+    mainChart->resize(mainScene->sceneRect().width(),mainScene->sceneRect().height());
+    ui->GV_chartView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
+    ui->GV_chartView->show();
+
+    //ui->GV_chartView->setChart(mainChart);
+    //ui->GV_chartView->setRenderHint(QPainter::Antialiasing);
 }
 
 void MainWindow::calculateYticks(QValueAxis* axisY)
@@ -398,3 +415,25 @@ void MainWindow::stockCBchanged(int indx)
     ui->LE_displaysymbol->setText(displaysymbols[indx]);
 }
 
+
+
+void MainWindow::on_PB_zoomIn_clicked()
+{
+    ui->GV_chartView->scale(1.2,1.2);
+}
+
+void MainWindow::on_PB_zoomOut_clicked()
+{
+    ui->GV_chartView->scale(0.8,0.8);
+}
+
+//This has to be included in a class that inherits from QGraphicsView
+
+//void MainWindow::keyPressEvent(QKeyEvent *event)
+//{
+//    switch (event->key()) {
+
+//    default:
+//             QGraphicsView::keyPressEvent(event);
+//    }
+//}
