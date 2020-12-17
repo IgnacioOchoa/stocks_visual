@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->CB_stockName,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::stockCBchanged);
     connect(ui->PB_plot, &QPushButton::pressed, this, &MainWindow::plotPressed);
 
+    mainChart = nullptr;
     mainScene = new QGraphicsScene(this);
 
     ui->LE_currency->setReadOnly(true);
@@ -22,6 +23,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->LE_type->setReadOnly(true);
     ui->LE_description->setReadOnly(true);
     ui->LE_displaysymbol->setReadOnly(true);
+
+    ui->GV_chartView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->GV_chartView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+
+    ui->GV_chartView->installEventFilter(this);
+    //connect(ui->GV_chartView->resize()
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->GV_chartView)
+    {
+        if (event->type() == QEvent::Resize)
+        {
+            qInfo() << "Me estan cambiando el tamanioooo";
+            if(mainChart)
+            {
+                ui->GV_chartView->showNormal();
+                ui->GV_chartView->ensureVisible(mainScene->sceneRect(), 10,10);
+                ui->GV_chartView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
+            }
+            return false;
+        }
+    }
+    return false;
 }
 
 MainWindow::~MainWindow()
@@ -183,7 +210,7 @@ void MainWindow::plotData()
     qInfo() << "GraphicsView->sceneRect() = " << ui->GV_chartView->sceneRect();
     //mainScene->addRect(-0.5, -0.5, 99.5, 147.5);
     //ui->GV_chartView->setSceneRect(QRectF(-50,-50,200,200));
-    qInfo() << "GraphicsView->sceneRect() = " << ui->GV_chartView->sceneRect();
+    qInfo() << "GraphicsView->size() = " << ui->GV_chartView->size();
     mainChart->resize(mainScene->sceneRect().width(),mainScene->sceneRect().height());
     ui->GV_chartView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
     ui->GV_chartView->show();
@@ -414,8 +441,6 @@ void MainWindow::stockCBchanged(int indx)
     ui->LE_description->setText(descriptions[indx]);
     ui->LE_displaysymbol->setText(displaysymbols[indx]);
 }
-
-
 
 void MainWindow::on_PB_zoomIn_clicked()
 {

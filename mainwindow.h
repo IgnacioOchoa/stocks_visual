@@ -30,6 +30,8 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    bool eventFilter(QObject *watched, QEvent *event);
+
     ~MainWindow();
 
 private:
@@ -92,7 +94,7 @@ private slots:
     void plotPressed();
     void on_PB_zoomIn_clicked();
     void on_PB_zoomOut_clicked();
-    void keyPressEvent(QKeyEvent *event);
+    //void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // MAINWINDOW_H
