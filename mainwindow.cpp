@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->CB_stockName,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::stockCBchanged);
     connect(ui->PB_plot, &QPushButton::pressed, this, &MainWindow::plotPressed);
 
-    mainChart = nullptr;
+    mainChart = new QChart();
     mainScene = new QGraphicsScene(this);
 
     ui->LE_currency->setReadOnly(true);
@@ -29,23 +29,83 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     ui->GV_chartView->installEventFilter(this);
+    mainScene->installEventFilter(this);
+    mainChart->installEventFilter(this);
     //connect(ui->GV_chartView->resize()
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
+    //qInfo() << "Object watched: " << watched->objectName() << "    event: " << event->type();
+    //return false;
+
+    if (watched == mainChart)
+    {
+        if (event->type() == QEvent::GraphicsSceneWheel)
+        {
+            qInfo() << "main Chart -> event: " << event->type();
+            return true;
+        }
+        return false;
+
+    }
+
     if (watched == ui->GV_chartView)
     {
         if (event->type() == QEvent::Resize)
         {
-            qInfo() << "Me estan cambiando el tamanioooo";
+            qInfo() << "Graphics View: Size changed";
             if(mainChart)
             {
-                ui->GV_chartView->showNormal();
-                ui->GV_chartView->ensureVisible(mainScene->sceneRect(), 10,10);
-                ui->GV_chartView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
+                //ui->GV_chartView->showNormal();
+                //ui->GV_chartView->ensureVisible(mainScene->sceneRect(), 10,10);
+                //ui->GV_chartView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
             }
             return false;
+        }
+        else if (event->type() == QEvent::Wheel)
+        {
+            qInfo() << "Graphics View: QWheelEvent";
+            QWheelEvent *wEvent = (QWheelEvent*)event;
+            if(mainChart && wEvent)
+            {
+                ui->GV_chartView->scale(1+wEvent->angleDelta().y()/1000.0,1+wEvent->angleDelta().y()/1000.0);
+                return false;
+            }
+        }
+        else if (event->type() == QEvent::GraphicsSceneWheel)
+        {
+            qInfo() << "Graphics View: QGraphicsSceneWheelEvent";
+            return true;
+        }
+        else if (event->type() == QEvent::Scroll)
+        {
+            qInfo() << "Graphics View: QScrollEvent";
+            return true;
+        }
+
+    }
+    else if (watched == mainScene)
+    {
+        if (event->type() == QEvent::Resize)
+        {
+            qInfo() << "Graphics Scene: Size changed";
+            return false;
+        }
+        else if (event->type() == QEvent::Wheel)
+        {
+            qInfo() << "Graphics Scene: QWheelEvent";
+            return true;
+        }
+        else if (event->type() == QEvent::GraphicsSceneWheel)
+        {
+            qInfo() << "Graphics Scene: QGraphicsSceneWheelEvent";
+            return false;
+        }
+        else if (event->type() == QEvent::Scroll)
+        {
+            qInfo() << "Graphics Scene: Scroll";
+            return true;
         }
     }
     return false;
@@ -147,7 +207,6 @@ void MainWindow::plotData()
 
     //Creation of QChart
 
-    mainChart = new QChart();
     mainChart->setTitle("Stock series from " + initialDate + " to " + finalDate);
     mainChart->setAnimationOptions(QChart::SeriesAnimations);
 
@@ -451,14 +510,3 @@ void MainWindow::on_PB_zoomOut_clicked()
 {
     ui->GV_chartView->scale(0.8,0.8);
 }
-
-//This has to be included in a class that inherits from QGraphicsView
-
-//void MainWindow::keyPressEvent(QKeyEvent *event)
-//{
-//    switch (event->key()) {
-
-//    default:
-//             QGraphicsView::keyPressEvent(event);
-//    }
-//}
