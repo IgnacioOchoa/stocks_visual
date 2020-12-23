@@ -29,6 +29,12 @@ private:
     QCategoryAxis *mainAxisX;
     QCategoryAxis *weekAxis;
 
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
+private slots:
+    void chartPlotAreaChanged(const QRectF &plotArea);
+
 };
 
 #endif // DATAVISUALIZATION_H
