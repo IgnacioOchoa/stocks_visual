@@ -16,10 +16,18 @@ QT += widgets network charts
 
 # Input
 SOURCES += main.cpp \
-    mainwindow.cpp
+    datavisualization.cpp \
+    mainwindow.cpp \
+    networkinterface.cpp \
+    singlestock.cpp \
+    stockdata.cpp
 
 FORMS += \
     mainwindow.ui
 
 HEADERS += \
-    mainwindow.h
+    datavisualization.h \
+    mainwindow.h \
+    networkinterface.h \
+    singlestock.h \
+    stockdata.h
