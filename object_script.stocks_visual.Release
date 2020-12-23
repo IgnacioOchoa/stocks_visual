@@ -1,0 +1,10 @@
+release/main.o
+release/datavisualization.o
+release/mainwindow.o
+release/networkinterface.o
+release/singlestock.o
+release/stockdata.o
+release/moc_datavisualization.o
+release/moc_mainwindow.o
+release/moc_networkinterface.o
+release/moc_stockdata.o

@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     statBar = this->statusBar();
     statBar->addWidget(statLabel);
 
+    statLabel->setText("Loading...");
+
     setDates();
 
     connect(ui->CB_stockName,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::stockCBchanged);
@@ -60,9 +62,7 @@ void MainWindow::populateCBStockInfo()
 //  Once the general info about all stocks is received and processed, it populates the stocks combo box
 //  and sets the default one
 {
-    QStringList dispSyms = stockData->getDisplaySymbols();
-    dispSyms.sort();
-    ui->CB_stockName->addItems(dispSyms);
+    ui->CB_stockName->addItems(stockData->getDisplaySymbols());
     ui->CB_stockName->setCurrentIndex(ui->CB_stockName->findText("AAPL"));
 }
 
@@ -105,4 +105,5 @@ void MainWindow::stockInfoReady()
 {
     populateCBStockInfo();
     ui->PB_plot->setEnabled(true);
+    statLabel->setText("Info loaded");
 }

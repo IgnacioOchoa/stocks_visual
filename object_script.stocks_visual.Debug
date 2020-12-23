@@ -1,0 +1,10 @@
+debug/main.o
+debug/datavisualization.o
+debug/mainwindow.o
+debug/networkinterface.o
+debug/singlestock.o
+debug/stockdata.o
+debug/moc_datavisualization.o
+debug/moc_mainwindow.o
+debug/moc_networkinterface.o
+debug/moc_stockdata.o

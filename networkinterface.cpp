@@ -152,14 +152,23 @@ void NetworkInterface::InfoReplyFinished()
         }
     }
 
+    QMap<QString,QJsonObject> symbolMap;
+
     for (int i=0; i<jsonArr.size(); i++)
     {
         QJsonObject obj = jsonArr[i].toObject();
+        n_displaysymbols.append(obj["displaySymbol"].toString());
+        symbolMap.insert(n_displaysymbols[i],obj);
+    }
+
+    n_displaysymbols.sort();
+    foreach(QString s, n_displaysymbols)
+    {
+        QJsonObject obj = symbolMap[s];
         n_symbols.append(obj["symbol"].toString());
         n_types.append(obj["type"].toString());
         n_currencies.append(obj["currency"].toString());
         n_descriptions.append(obj["description"].toString());
-        n_displaysymbols.append(obj["displaySymbol"].toString());
     }
 
     emit stockInfoReady();
