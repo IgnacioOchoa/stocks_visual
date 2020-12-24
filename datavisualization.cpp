@@ -22,6 +22,7 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
 void DataVisualization::plotData()
 // Once the information about the specific stock has been received and processed, this functions plots the data
 {
+    zoomLevel = 1;
     mainChart->removeAllSeries();
     foreach (QAbstractAxis* ax, mainChart->axes())
     {
@@ -191,7 +192,7 @@ void DataVisualization::calculateWeekLines()
 
 bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 {
-    qInfo() << "Object: " << watched << "  Event: " << event;
+
     if (watched == graphicsView && event->type() == QEvent::Resize)
     {
         QResizeEvent* re = static_cast<QResizeEvent*>(event);
@@ -217,12 +218,46 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
         QGraphicsSceneWheelEvent* wEvent = static_cast<QGraphicsSceneWheelEvent*>(event);
         if(wEvent)
         {
-            if (wEvent->delta() > 0) mainChart->zoomIn();
-            else if (wEvent->delta() < 0) mainChart->zoomOut();
+            if (wEvent->delta() > 0)
+            {
+                if (maxZoom/zoomLevel < 1.2)
+                {
+                    mainChart->zoom(maxZoom/zoomLevel);
+                    zoomLevel = maxZoom;
+                }
+                else
+                {
+                    mainChart->zoom(1.2);
+                    zoomLevel *= 1.2;
+                }
+                qInfo() << "zoomLevel = " << zoomLevel;
+            }
+            else if (wEvent->delta() < 0)
+            {
+                if (minZoom/zoomLevel > 1/1.2)
+                {
+                    mainChart->zoom(minZoom/zoomLevel);
+                    zoomLevel = minZoom;
+                }
+                else
+                {
+                    mainChart->zoom(1/1.2);
+                    zoomLevel *= 1/1.2;
+                }
+                qInfo() << "zoomLevel = " << zoomLevel;
+            }
+            graphicsView->setSceneRect(mainScene->itemsBoundingRect());
+            qInfo() << "Graphics Scence rect = " << mainScene->itemsBoundingRect();
+            qInfo() << "Chart rect = " << mainChart->rect();
+            qInfo() << "Graphics view Scen rect = " << graphicsView->sceneRect() << "\n";
         }
-        graphicsView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
+        //graphicsView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
         return true;
     }
+    else if (watched == mainScene && event->type()==QEvent::MetaCall) return false;
+    else if (watched == graphicsView && event->type()==QEvent::MetaCall) return false;
+    else if (watched == mainScene && event->type()==QEvent::GraphicsSceneMouseMove) return false;
+    qInfo() << "Object: " << watched << "  Event: " << event;
     return false;
 }
 

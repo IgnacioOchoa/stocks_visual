@@ -29,6 +29,10 @@ private:
     QCategoryAxis *mainAxisX;
     QCategoryAxis *weekAxis;
 
+    double zoomLevel;
+    const double maxZoom = 3.0;
+    const double minZoom = 0.4;
+
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
