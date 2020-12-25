@@ -15,11 +15,15 @@ public:
     void plotData();
 
 private:
-    void calculateYticks(QValueAxis* axisY);
+    void calculateYticks();
     void calculateXticks();
     void calculateWeekLines();
 
     StockData* stockData;
+
+    QCandlestickSeries* candleSeries;
+
+    //QList<QGraphicsItem*> drawnElements;
 
     QGraphicsScene* mainScene;
     QGraphicsView* graphicsView;
@@ -29,9 +33,16 @@ private:
     QCategoryAxis *mainAxisX;
     QCategoryAxis *weekAxis;
 
+    QValueAxis* axisY;
+
     double zoomLevel;
     const double maxZoom = 3.0;
     const double minZoom = 0.4;
+
+    QRectF masterRect;
+
+    float axisYmin;
+    float axisYmax;
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;

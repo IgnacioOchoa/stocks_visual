@@ -15,6 +15,8 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
     graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+    axisY = nullptr;
+
     connect(mainChart, &QChart::plotAreaChanged, this, &DataVisualization::chartPlotAreaChanged);
 
 }
@@ -28,7 +30,7 @@ void DataVisualization::plotData()
     {
         mainChart->removeAxis(ax);
     }
-    QCandlestickSeries* candleSeries = new QCandlestickSeries();
+    candleSeries = new QCandlestickSeries();
     QLineSeries *lineSeries = new QLineSeries();
 
     candleSeries->setName("Stocks");
@@ -54,7 +56,7 @@ void DataVisualization::plotData()
     //Creation of QChart
 
     mainChart->setTitle("Stock series from " + initialDate + " to " + finalDate);
-    mainChart->setAnimationOptions(QChart::SeriesAnimations);
+    //mainChart->setAnimationOptions(QChart::SeriesAnimations);
 
     //when you create default axis, it makes the connections between the axis and the already added series
     //candleSeries will use the default axis, but lineSeries will not
@@ -71,7 +73,7 @@ void DataVisualization::plotData()
     calculateXticks();
     calculateWeekLines();
     mainChart->addAxis(mainAxisX, Qt::AlignBottom);
-    mainChart->addAxis(weekAxis, Qt::AlignBottom);
+    //mainChart->addAxis(weekAxis, Qt::AlignBottom);
 
     //Axis X for Line Series
 
@@ -83,7 +85,7 @@ void DataVisualization::plotData()
 
     //Axis Y
 
-    QValueAxis *axisY = new QValueAxis;
+    axisY = new QValueAxis;
 
     mainChart->addAxis(axisY, Qt::AlignLeft);
 
@@ -99,7 +101,7 @@ void DataVisualization::plotData()
     lineSeries->setPointsVisible(true);
     lineSeries->attachAxis(axisY);
 
-    calculateYticks(axisY);
+    calculateYticks();
 
     mainChart->legend()->setVisible(false);
 
@@ -109,29 +111,38 @@ void DataVisualization::plotData()
     //mainChart->resetTransform();
     graphicsView->setScene(mainScene);
     graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    mainChart->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    //mainChart->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     //mainChart->resize(800,800);
-    graphicsView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
+    //graphicsView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
+    masterRect = graphicsView->sceneRect();
     graphicsView->show();
+
+    //graphicsScene->addEllipse()
+
+
+
+
+
 }
 
-void DataVisualization::calculateYticks(QValueAxis* axisY)
+void DataVisualization::calculateYticks()
 {
-    int max = ceil(axisY->max()*1.01);
-    int min = floor(axisY->min()*0.99);
-    int numtks = max-min+1;
+    axisYmax = ceil(axisY->max()*1.0);
+    axisYmin = floor(axisY->min()*1.0);
+    int numtks = axisYmax-axisYmin+1;
+
 
     while (numtks > 15)
     {
         if (numtks%2 == 1) numtks = (numtks-1)/2 + 1;
         else {
             numtks++;
-            max++;
+            axisYmax++;
         }
     }
 
-    axisY->setMax(max);
-    axisY->setMin(min);
+    axisY->setMax(axisYmax);
+    axisY->setMin(axisYmin);
     axisY->setTickCount(numtks);
 }
 
@@ -199,13 +210,14 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
         if(re)
         {
 
-            qInfo() << "Resize event:\nOld size = " << re->oldSize() << "\nNew size = " << re->size();
+            qInfo() << "*****Resize event:\nOld size = " << re->oldSize() << "\nNew size = " << re->size();
             mainChart->resize(re->size());
+            masterRect = QRectF(QPointF(0,0),re->size());
+            mainScene->setSceneRect(masterRect);
             qInfo() << "Scene rect: " << mainScene->sceneRect();
             qInfo() << "Items bounding rect: " << mainScene->itemsBoundingRect();
-            //QRectF r = mainScene->itemsBoundingRect();
-            //r.adjust(0,250,0,-250);
-            //mainScene->setSceneRect(r);
+            qInfo() << "Graphics view rect: " << graphicsView->sceneRect();
+            return false;
         }
     }
     else if(watched == mainChart && event->type()==QEvent::GraphicsSceneWheel)
@@ -230,7 +242,9 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     mainChart->zoom(1.2);
                     zoomLevel *= 1.2;
                 }
-                qInfo() << "zoomLevel = " << zoomLevel;
+                axisY->setMax(axisYmax);
+                axisY->setMin(axisYmin);
+                //qInfo() << "zoomLevel = " << zoomLevel;
             }
             else if (wEvent->delta() < 0)
             {
@@ -244,24 +258,36 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     mainChart->zoom(1/1.2);
                     zoomLevel *= 1/1.2;
                 }
-                qInfo() << "zoomLevel = " << zoomLevel;
+                //qInfo() << "zoomLevel = " << zoomLevel;
+                axisY->setMax(axisYmax);
+                axisY->setMin(axisYmin);
             }
-            graphicsView->setSceneRect(mainScene->itemsBoundingRect());
-            qInfo() << "Graphics Scence rect = " << mainScene->itemsBoundingRect();
-            qInfo() << "Chart rect = " << mainChart->rect();
-            qInfo() << "Graphics view Scen rect = " << graphicsView->sceneRect() << "\n";
+            mainScene->setSceneRect(masterRect);
+            //qInfo() << "Graphics Scence Item bounding rect = " << mainScene->itemsBoundingRect();
+            //qInfo() << "Graphics Scence rect = " << mainScene->sceneRect();
+            //qInfo() << "Chart rect = " << mainChart->rect();
+            //qInfo() << "Graphics view Scen rect = " << graphicsView->sceneRect() << "\n";
         }
-        //graphicsView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
         return true;
     }
-    else if (watched == mainScene && event->type()==QEvent::MetaCall) return false;
-    else if (watched == graphicsView && event->type()==QEvent::MetaCall) return false;
-    else if (watched == mainScene && event->type()==QEvent::GraphicsSceneMouseMove) return false;
-    qInfo() << "Object: " << watched << "  Event: " << event;
+    //else if (watched == mainScene && event->type()==QEvent::MetaCall) return false;
+    //else if (watched == graphicsView && event->type()==QEvent::MetaCall) return false;
+    //else if (watched == mainScene && event->type()==QEvent::GraphicsSceneMouseMove) return false;
+    //qInfo() << "Object: " << watched << "  Event: " << event;
     return false;
 }
 
 void DataVisualization::chartPlotAreaChanged(const QRectF &plotArea)
 {
-    qInfo() << "chart plot area changed";
+    //QPointF p = mainChart->mapToPosition(QPointF(8,128), candleSeries);
+    //qInfo() << "p.x() =" << p.x() << "  p.y() = " << p.y();
+    //mainScene->addEllipse(p.x()-5,p.y()-5,5,5);
+    if(axisY)
+    {
+        qInfo() << "axis Y max = " << axisY->max();
+        qInfo() << "axis Y min = " << axisY->min();
+        //axisY->setMax(axisYmax);
+        //axisY->setMin(axisYmin);
+    }
+    //qInfo() << "chart plot area changed";
 }
