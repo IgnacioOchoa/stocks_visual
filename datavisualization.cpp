@@ -16,6 +16,7 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
     graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     axisY = nullptr;
+    candleSeries = nullptr;
 
     connect(mainChart, &QChart::plotAreaChanged, this, &DataVisualization::chartPlotAreaChanged);
 
@@ -117,11 +118,7 @@ void DataVisualization::plotData()
     masterRect = graphicsView->sceneRect();
     graphicsView->show();
 
-    //graphicsScene->addEllipse()
-
-
-
-
+    createElements();
 
 }
 
@@ -201,6 +198,28 @@ void DataVisualization::calculateWeekLines()
     weekAxis->setLineVisible(false);
 }
 
+void DataVisualization::createElements()
+{
+    QPointF posInChart = QPointF(8,130);
+    QPointF pos = mainChart->mapToPosition(posInChart, candleSeries);
+    QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
+    itm->setPos(pos);
+    itm->setData(0,posInChart);
+    drawnElements.append(itm);
+}
+
+void DataVisualization::drawElements()
+{
+    if (!drawnElements.isEmpty())
+    {
+       foreach(QGraphicsItem* itm, drawnElements)
+       {
+           QPointF newPos = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
+           itm->setPos(newPos);
+       }
+    }
+}
+
 bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 {
 
@@ -263,6 +282,7 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 axisY->setMin(axisYmin);
             }
             mainScene->setSceneRect(masterRect);
+            drawElements();
             //qInfo() << "Graphics Scence Item bounding rect = " << mainScene->itemsBoundingRect();
             //qInfo() << "Graphics Scence rect = " << mainScene->sceneRect();
             //qInfo() << "Chart rect = " << mainChart->rect();
@@ -270,6 +290,28 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
         }
         return true;
     }
+    else if (watched == graphicsView && event->type()==QEvent::MouseButtonPress)
+    {
+
+        QMouseEvent* mouseEv = static_cast<QMouseEvent*>(event);
+        if(mouseEv)
+        {
+            if (mouseEv->button()==Qt::LeftButton)
+            {
+                QPointF scenePoint = graphicsView->mapToScene(mouseEv->pos());
+                QPointF chartPoint = mainChart->mapFromScene(scenePoint);
+                QPointF seriesPoint = mainChart->mapToValue(chartPoint, candleSeries);
+
+                QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
+                itm->setPos(chartPoint);
+                itm->setData(0,seriesPoint);
+                drawnElements.append(itm);
+
+                qInfo() << "Left button clicked on scene: " << seriesPoint;
+            }
+        }
+    }
+
     //else if (watched == mainScene && event->type()==QEvent::MetaCall) return false;
     //else if (watched == graphicsView && event->type()==QEvent::MetaCall) return false;
     //else if (watched == mainScene && event->type()==QEvent::GraphicsSceneMouseMove) return false;
@@ -279,9 +321,7 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 
 void DataVisualization::chartPlotAreaChanged(const QRectF &plotArea)
 {
-    //QPointF p = mainChart->mapToPosition(QPointF(8,128), candleSeries);
-    //qInfo() << "p.x() =" << p.x() << "  p.y() = " << p.y();
-    //mainScene->addEllipse(p.x()-5,p.y()-5,5,5);
+    drawElements();
     if(axisY)
     {
         qInfo() << "axis Y max = " << axisY->max();

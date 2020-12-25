@@ -18,12 +18,14 @@ private:
     void calculateYticks();
     void calculateXticks();
     void calculateWeekLines();
+    void createElements();
+    void drawElements();
 
     StockData* stockData;
 
     QCandlestickSeries* candleSeries;
 
-    //QList<QGraphicsItem*> drawnElements;
+    QList<QGraphicsItem*> drawnElements;
 
     QGraphicsScene* mainScene;
     QGraphicsView* graphicsView;
