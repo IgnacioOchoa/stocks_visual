@@ -20,6 +20,9 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
 
     connect(mainChart, &QChart::plotAreaChanged, this, &DataVisualization::chartPlotAreaChanged);
 
+    mouseJustPressed = false;
+    mouseJustReleased = true;
+    movingLine = nullptr;
 }
 
 void DataVisualization::plotData()
@@ -57,7 +60,6 @@ void DataVisualization::plotData()
     //Creation of QChart
 
     mainChart->setTitle("Stock series from " + initialDate + " to " + finalDate);
-    //mainChart->setAnimationOptions(QChart::SeriesAnimations);
 
     //when you create default axis, it makes the connections between the axis and the already added series
     //candleSeries will use the default axis, but lineSeries will not
@@ -75,14 +77,6 @@ void DataVisualization::plotData()
     calculateWeekLines();
     mainChart->addAxis(mainAxisX, Qt::AlignBottom);
     //mainChart->addAxis(weekAxis, Qt::AlignBottom);
-
-    //Axis X for Line Series
-
-    //QValueAxis * xValAx = new QValueAxis();
-    //xValAx->setMin(0);
-    //xValAx->setMax(numPlotPoints);
-    //chart->addAxis(xValAx, Qt::AlignBottom);
-    //xValAx->setVisible(false);
 
     //Axis Y
 
@@ -106,20 +100,12 @@ void DataVisualization::plotData()
 
     mainChart->legend()->setVisible(false);
 
-    //chart->legend()->setAlignment(Qt::AlignRight);
-
     mainScene->addItem(mainChart);
-    //mainChart->resetTransform();
     graphicsView->setScene(mainScene);
     graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    //mainChart->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    //mainChart->resize(800,800);
-    //graphicsView->fitInView(mainScene->itemsBoundingRect(),Qt::KeepAspectRatio);
-    masterRect = graphicsView->sceneRect();
     graphicsView->show();
 
     createElements();
-
 }
 
 void DataVisualization::calculateYticks()
@@ -127,7 +113,6 @@ void DataVisualization::calculateYticks()
     axisYmax = ceil(axisY->max()*1.0);
     axisYmin = floor(axisY->min()*1.0);
     int numtks = axisYmax-axisYmin+1;
-
 
     while (numtks > 15)
     {
@@ -214,11 +199,38 @@ void DataVisualization::drawElements()
     {
        foreach(QGraphicsItem* itm, drawnElements)
        {
-           QPointF newPos = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
-           itm->setPos(newPos);
+           if(static_cast<QGraphicsEllipseItem*>(itm))
+           {
+                QPointF newPos = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
+                itm->setPos(newPos);
+           }
+           else if(QGraphicsLineItem* litm = static_cast<QGraphicsLineItem*>(itm))
+           {
+               QPointF p1 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
+               QPointF p2 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(1)),candleSeries);
+               litm->setLine(p1.x(),p1.y(),p2.x(),p2.y());
+           }
        }
     }
 }
+
+QPointF DataVisualization::scene2series(const QPointF& pt)
+{
+    QPointF chartPoint = mainChart->mapFromScene(pt);
+    QPointF seriesPoint = mainChart->mapToValue(chartPoint, candleSeries);
+    return seriesPoint;
+}
+
+void DataVisualization::logRects(const QString &origin)
+{
+    qInfo() << "*-*-*-* Rects called from : " << origin << " *-*-*-*";
+    qInfo() << "mainChart->plotArea() = " << mainChart->plotArea();
+    qInfo() << "mainChart->rect() = " << mainChart->rect();
+    qInfo() << "mainScene->sceneRect() = " << mainScene->sceneRect();
+    qInfo() << "mainScene->itemsBoundingRect() = " << mainScene->itemsBoundingRect();
+    qInfo() << "graphicsView->sceneRect() = " << graphicsView->sceneRect();
+}
+
 
 bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 {
@@ -228,14 +240,10 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
         QResizeEvent* re = static_cast<QResizeEvent*>(event);
         if(re)
         {
-
             qInfo() << "*****Resize event:\nOld size = " << re->oldSize() << "\nNew size = " << re->size();
             mainChart->resize(re->size());
-            masterRect = QRectF(QPointF(0,0),re->size());
-            mainScene->setSceneRect(masterRect);
-            qInfo() << "Scene rect: " << mainScene->sceneRect();
-            qInfo() << "Items bounding rect: " << mainScene->itemsBoundingRect();
-            qInfo() << "Graphics view rect: " << graphicsView->sceneRect();
+            mainScene->setSceneRect(mainScene->itemsBoundingRect());
+            //logRects("eventFilter: QEvent::Resize sent to graphicsView");
             return false;
         }
     }
@@ -263,7 +271,6 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 }
                 axisY->setMax(axisYmax);
                 axisY->setMin(axisYmin);
-                //qInfo() << "zoomLevel = " << zoomLevel;
             }
             else if (wEvent->delta() < 0)
             {
@@ -277,57 +284,94 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     mainChart->zoom(1/1.2);
                     zoomLevel *= 1/1.2;
                 }
-                //qInfo() << "zoomLevel = " << zoomLevel;
                 axisY->setMax(axisYmax);
                 axisY->setMin(axisYmin);
             }
-            mainScene->setSceneRect(masterRect);
             drawElements();
-            //qInfo() << "Graphics Scence Item bounding rect = " << mainScene->itemsBoundingRect();
-            //qInfo() << "Graphics Scence rect = " << mainScene->sceneRect();
-            //qInfo() << "Chart rect = " << mainChart->rect();
-            //qInfo() << "Graphics view Scen rect = " << graphicsView->sceneRect() << "\n";
+            //logRects("eventFilter: QEvent::GraphicsSceneWheel sent to mainScene");
         }
         return true;
     }
-    else if (watched == graphicsView && event->type()==QEvent::MouseButtonPress)
+    else if (watched == mainScene && event->type()==QEvent::GraphicsSceneMousePress)
     {
 
-        QMouseEvent* mouseEv = static_cast<QMouseEvent*>(event);
+        QGraphicsSceneMouseEvent* mouseEv = static_cast<QGraphicsSceneMouseEvent*>(event);
         if(mouseEv)
         {
             if (mouseEv->button()==Qt::LeftButton)
             {
-                QPointF scenePoint = graphicsView->mapToScene(mouseEv->pos());
-                QPointF chartPoint = mainChart->mapFromScene(scenePoint);
-                QPointF seriesPoint = mainChart->mapToValue(chartPoint, candleSeries);
-
-                QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
-                itm->setPos(chartPoint);
-                itm->setData(0,seriesPoint);
-                drawnElements.append(itm);
-
-                qInfo() << "Left button clicked on scene: " << seriesPoint;
+                mouseJustPressed = true;
+                mouseJustReleased = false;
+                pressPos = mouseEv->scenePos();
             }
         }
+        return false;
     }
 
-    //else if (watched == mainScene && event->type()==QEvent::MetaCall) return false;
-    //else if (watched == graphicsView && event->type()==QEvent::MetaCall) return false;
-    //else if (watched == mainScene && event->type()==QEvent::GraphicsSceneMouseMove) return false;
-    //qInfo() << "Object: " << watched << "  Event: " << event;
+    else if (watched==mainScene && event->type()==QEvent::GraphicsSceneMouseRelease)
+    {
+
+        QGraphicsSceneMouseEvent* mouseEv = static_cast<QGraphicsSceneMouseEvent*>(event);
+        if(mouseEv)
+        {
+            if (mouseEv->button()==Qt::LeftButton)
+            {
+                mouseJustPressed = false;
+                mouseJustReleased = true;
+                releasePos = mouseEv->scenePos();
+            }
+            if (pressPos == releasePos)
+            {
+                QPointF seriesPoint = scene2series(pressPos);
+
+                QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
+                itm->setPos(mouseEv->scenePos());
+                itm->setData(0,seriesPoint);
+                drawnElements.append(itm);
+            }
+            else if (pressPos != releasePos && movingLine)
+            {
+                QPointF seriesPoint1 = scene2series(pressPos);
+                QPointF seriesPoint2 = scene2series(releasePos);
+                movingLine->setData(0,seriesPoint1);
+                movingLine->setData(0,seriesPoint2);
+                drawnElements.append(movingLine);
+                movingLine = nullptr;
+            }
+        }
+        return false;
+    }
+
+    else if (watched==mainScene && event->type()==QEvent::GraphicsSceneMouseMove)
+    {
+        QGraphicsSceneMouseEvent* moveEv = static_cast<QGraphicsSceneMouseEvent*>(event);
+        if(moveEv)
+        {
+            if (mouseJustPressed)
+            {
+                if (pressPos != moveEv->scenePos())
+                {
+                    if(!movingLine)
+                    {
+                        movingLine = new QGraphicsLineItem(pressPos.x(), pressPos.y(),
+                                                           moveEv->scenePos().x(), moveEv->scenePos().y());
+                        mainScene->addItem(movingLine);
+                    }
+                    else
+                    {
+                        movingLine->setLine(pressPos.x(), pressPos.y(),
+                                            moveEv->scenePos().x(), moveEv->scenePos().y());
+                    }
+                }
+            }
+        }
+        //logRects("eventFilter: QEvent::GraphicsSceneMouseMove sent to mainScene");
+        return true;
+    }
     return false;
 }
 
 void DataVisualization::chartPlotAreaChanged(const QRectF &plotArea)
 {
     drawElements();
-    if(axisY)
-    {
-        qInfo() << "axis Y max = " << axisY->max();
-        qInfo() << "axis Y min = " << axisY->min();
-        //axisY->setMax(axisYmax);
-        //axisY->setMin(axisYmin);
-    }
-    //qInfo() << "chart plot area changed";
 }

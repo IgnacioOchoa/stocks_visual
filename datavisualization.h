@@ -20,6 +20,8 @@ private:
     void calculateWeekLines();
     void createElements();
     void drawElements();
+    QPointF scene2series(const QPointF &pt);
+    void logRects(const QString& origin);
 
     StockData* stockData;
 
@@ -45,6 +47,13 @@ private:
 
     float axisYmin;
     float axisYmax;
+
+    bool mouseJustPressed;
+    bool mouseJustReleased;
+
+    QPointF pressPos; //Scene coordinates
+    QPointF releasePos;  //Secene coordinates
+    QGraphicsLineItem* movingLine;
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
