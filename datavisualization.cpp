@@ -199,16 +199,18 @@ void DataVisualization::drawElements()
     {
        foreach(QGraphicsItem* itm, drawnElements)
        {
-           if(static_cast<QGraphicsEllipseItem*>(itm))
+           if(qgraphicsitem_cast<QGraphicsEllipseItem*>(itm))
            {
                 QPointF newPos = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
                 itm->setPos(newPos);
            }
-           else if(QGraphicsLineItem* litm = static_cast<QGraphicsLineItem*>(itm))
+           else if(QGraphicsLineItem* linitm = qgraphicsitem_cast<QGraphicsLineItem*>(itm))
            {
                QPointF p1 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
                QPointF p2 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(1)),candleSeries);
-               litm->setLine(p1.x(),p1.y(),p2.x(),p2.y());
+               p1 = linitm->mapToScene(p1);
+               p2 = linitm->mapToScene(p2);
+               linitm->setLine(p1.x(),p1.y(),p2.x(),p2.y());
            }
        }
     }
@@ -334,7 +336,7 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 QPointF seriesPoint1 = scene2series(pressPos);
                 QPointF seriesPoint2 = scene2series(releasePos);
                 movingLine->setData(0,seriesPoint1);
-                movingLine->setData(0,seriesPoint2);
+                movingLine->setData(1,seriesPoint2);
                 drawnElements.append(movingLine);
                 movingLine = nullptr;
             }
