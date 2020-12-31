@@ -31,3 +31,9 @@ HEADERS += \
     networkinterface.h \
     singlestock.h \
     stockdata.h
+
+RESOURCES += \
+    Icons.qrc \
+    styles.qrc
+
+DISTFILES +=

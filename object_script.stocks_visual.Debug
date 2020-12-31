@@ -4,6 +4,8 @@ debug/mainwindow.o
 debug/networkinterface.o
 debug/singlestock.o
 debug/stockdata.o
+debug/qrc_Icons.o
+debug/qrc_styles.o
 debug/moc_datavisualization.o
 debug/moc_mainwindow.o
 debug/moc_networkinterface.o

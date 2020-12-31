@@ -22,6 +22,7 @@ private:
     void drawElements();
     QPointF scene2series(const QPointF &pt);
     void logRects(const QString& origin);
+    void createButtons();
 
     StockData* stockData;
 
@@ -54,6 +55,10 @@ private:
     QPointF pressPos; //Scene coordinates
     QPointF releasePos;  //Secene coordinates
     QGraphicsLineItem* movingLine;
+
+    QPushButton* pointButton;
+    QPushButton* lineButton;
+    QPushButton* splineButton;
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;

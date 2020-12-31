@@ -4,6 +4,8 @@ release/mainwindow.o
 release/networkinterface.o
 release/singlestock.o
 release/stockdata.o
+release/qrc_Icons.o
+release/qrc_styles.o
 release/moc_datavisualization.o
 release/moc_mainwindow.o
 release/moc_networkinterface.o

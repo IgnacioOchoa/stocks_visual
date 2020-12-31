@@ -23,6 +23,7 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
     mouseJustPressed = false;
     mouseJustReleased = true;
     movingLine = nullptr;
+    pointButton = nullptr;
 }
 
 void DataVisualization::plotData()
@@ -106,6 +107,7 @@ void DataVisualization::plotData()
     graphicsView->show();
 
     createElements();
+    createButtons();
 }
 
 void DataVisualization::calculateYticks()
@@ -208,8 +210,6 @@ void DataVisualization::drawElements()
            {
                QPointF p1 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
                QPointF p2 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(1)),candleSeries);
-               p1 = linitm->mapToScene(p1);
-               p2 = linitm->mapToScene(p2);
                linitm->setLine(p1.x(),p1.y(),p2.x(),p2.y());
            }
        }
@@ -231,6 +231,23 @@ void DataVisualization::logRects(const QString &origin)
     qInfo() << "mainScene->sceneRect() = " << mainScene->sceneRect();
     qInfo() << "mainScene->itemsBoundingRect() = " << mainScene->itemsBoundingRect();
     qInfo() << "graphicsView->sceneRect() = " << graphicsView->sceneRect();
+}
+
+void DataVisualization::createButtons()
+{
+    QIcon icon(QPixmap(":/iconImages/pointIcon.png"));
+    qInfo() << "Size of pixmap = " << QPixmap(":/iconImages/pointIcon.png").size();
+    pointButton = new QPushButton(icon,"",graphicsView);
+    pointButton->setIconSize(QSize(32,32));
+    pointButton->setBackgroundRole(QPalette::Window);
+    pointButton->setAutoFillBackground(true);
+    pointButton->show();
+    lineButton = new QPushButton("Line",graphicsView);
+    lineButton->move(0,pointButton->height());
+    lineButton->show();
+    splineButton = new QPushButton("Spline",graphicsView);
+    splineButton->move(0,pointButton->height()+lineButton->height());
+    splineButton->show();
 }
 
 
