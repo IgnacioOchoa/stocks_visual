@@ -24,6 +24,8 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
     mouseJustReleased = true;
     movingLine = nullptr;
     pointButton = nullptr;
+
+    drawingButtons = new QButtonGroup(graphicsView);
 }
 
 void DataVisualization::plotData()
@@ -187,12 +189,12 @@ void DataVisualization::calculateWeekLines()
 
 void DataVisualization::createElements()
 {
-    QPointF posInChart = QPointF(8,130);
-    QPointF pos = mainChart->mapToPosition(posInChart, candleSeries);
-    QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
-    itm->setPos(pos);
-    itm->setData(0,posInChart);
-    drawnElements.append(itm);
+    //QPointF posInChart = QPointF(8,130);
+    //QPointF pos = mainChart->mapToPosition(posInChart, candleSeries);
+    //QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
+    //itm->setPos(pos);
+    //itm->setData(0,posInChart);
+    //drawnElements.append(itm);
 }
 
 void DataVisualization::drawElements()
@@ -235,19 +237,42 @@ void DataVisualization::logRects(const QString &origin)
 
 void DataVisualization::createButtons()
 {
-    QIcon icon(QPixmap(":/iconImages/pointIcon.png"));
-    qInfo() << "Size of pixmap = " << QPixmap(":/iconImages/pointIcon.png").size();
-    pointButton = new QPushButton(icon,"",graphicsView);
+    QIcon handIcon(QPixmap(":/iconImages/handIcon.png"));
+    QIcon pointIcon(QPixmap(":/iconImages/pointIcon.png"));
+    QIcon lineIcon(QPixmap(":/iconImages/lineIcon.png"));
+    QIcon freeLineIcon(QPixmap(":/iconImages/freeLineIcon.png"));
+
+
+    handleButton = new QPushButton(handIcon,"",graphicsView);
+    handleButton->setObjectName("handleButton");
+    handleButton->setIconSize(QSize(32,32));
+    handleButton->setCheckable(true);
+    handleButton->setAutoExclusive(true);
+    drawingButtons->addButton(handleButton);
+    handleButton->show();
+
+    pointButton = new QPushButton(pointIcon,"",graphicsView);
+    pointButton->move(handleButton->width(),0);
     pointButton->setIconSize(QSize(32,32));
-    pointButton->setBackgroundRole(QPalette::Window);
-    pointButton->setAutoFillBackground(true);
+    pointButton->setCheckable(true);
+    pointButton->setAutoExclusive(true);
+    drawingButtons->addButton(pointButton);
     pointButton->show();
-    lineButton = new QPushButton("Line",graphicsView);
-    lineButton->move(0,pointButton->height());
+
+    lineButton = new QPushButton(lineIcon,"",graphicsView);
+    lineButton->setIconSize(QSize(32,32));
+    lineButton->move(handleButton->width()+pointButton->width(),0);
+    lineButton->setCheckable(true);
+    drawingButtons->addButton(lineButton);
     lineButton->show();
-    splineButton = new QPushButton("Spline",graphicsView);
-    splineButton->move(0,pointButton->height()+lineButton->height());
+
+    splineButton = new QPushButton(freeLineIcon,"",graphicsView);
+    splineButton->setIconSize(QSize(32,32));
+    splineButton->move(handleButton->width()+pointButton->width()+lineButton->width(),0);
+    splineButton->setCheckable(true);
+    drawingButtons->addButton(splineButton);
     splineButton->show();
+    drawingButtons->setExclusive(true);
 }
 
 
@@ -322,6 +347,14 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 mouseJustPressed = true;
                 mouseJustReleased = false;
                 pressPos = mouseEv->scenePos();
+                if (pointButton->isChecked())
+                {
+                    QPointF seriesPoint = scene2series(pressPos);
+                    QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
+                    itm->setPos(mouseEv->scenePos());
+                    itm->setData(0,seriesPoint);
+                    drawnElements.append(itm);
+                }
             }
         }
         return false;
@@ -338,24 +371,15 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 mouseJustPressed = false;
                 mouseJustReleased = true;
                 releasePos = mouseEv->scenePos();
-            }
-            if (pressPos == releasePos)
-            {
-                QPointF seriesPoint = scene2series(pressPos);
-
-                QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
-                itm->setPos(mouseEv->scenePos());
-                itm->setData(0,seriesPoint);
-                drawnElements.append(itm);
-            }
-            else if (pressPos != releasePos && movingLine)
-            {
-                QPointF seriesPoint1 = scene2series(pressPos);
-                QPointF seriesPoint2 = scene2series(releasePos);
-                movingLine->setData(0,seriesPoint1);
-                movingLine->setData(1,seriesPoint2);
-                drawnElements.append(movingLine);
-                movingLine = nullptr;
+                if (pressPos != releasePos && movingLine && lineButton->isChecked())
+                {
+                    QPointF seriesPoint1 = scene2series(pressPos);
+                    QPointF seriesPoint2 = scene2series(releasePos);
+                    movingLine->setData(0,seriesPoint1);
+                    movingLine->setData(1,seriesPoint2);
+                    drawnElements.append(movingLine);
+                    movingLine = nullptr;
+                }
             }
         }
         return false;
@@ -368,7 +392,7 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
         {
             if (mouseJustPressed)
             {
-                if (pressPos != moveEv->scenePos())
+                if (pressPos != moveEv->scenePos() && lineButton->isChecked())
                 {
                     if(!movingLine)
                     {

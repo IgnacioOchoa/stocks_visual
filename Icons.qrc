@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/iconImages">
         <file>pointIcon.png</file>
+        <file>lineIcon.png</file>
+        <file>handIcon.png</file>
+        <file>freeLineIcon.png</file>
     </qresource>
 </RCC>

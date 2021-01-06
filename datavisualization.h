@@ -56,9 +56,12 @@ private:
     QPointF releasePos;  //Secene coordinates
     QGraphicsLineItem* movingLine;
 
+    QPushButton* handleButton;
     QPushButton* pointButton;
     QPushButton* lineButton;
     QPushButton* splineButton;
+
+    QButtonGroup* drawingButtons;
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
