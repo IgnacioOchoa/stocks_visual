@@ -242,36 +242,49 @@ void DataVisualization::createButtons()
     QIcon lineIcon(QPixmap(":/iconImages/lineIcon.png"));
     QIcon freeLineIcon(QPixmap(":/iconImages/freeLineIcon.png"));
 
-
     handleButton = new QPushButton(handIcon,"",graphicsView);
     handleButton->setObjectName("handleButton");
     handleButton->setIconSize(QSize(32,32));
     handleButton->setCheckable(true);
     handleButton->setAutoExclusive(true);
+    handleButton->setChecked(true);
+    handleButtonPressed();
+    handleButton->setCursor(Qt::PointingHandCursor);
     drawingButtons->addButton(handleButton);
+    connect(handleButton, &QAbstractButton::pressed, this, &DataVisualization::handleButtonPressed);
     handleButton->show();
 
     pointButton = new QPushButton(pointIcon,"",graphicsView);
     pointButton->move(handleButton->width(),0);
+    pointButton->setObjectName("pointButton");
     pointButton->setIconSize(QSize(32,32));
     pointButton->setCheckable(true);
     pointButton->setAutoExclusive(true);
+    pointButton->setCursor(Qt::PointingHandCursor);
     drawingButtons->addButton(pointButton);
+    connect(pointButton, &QAbstractButton::pressed, this, &DataVisualization::pointButtonPressed);
     pointButton->show();
 
     lineButton = new QPushButton(lineIcon,"",graphicsView);
+    lineButton->setObjectName("lineButton");
     lineButton->setIconSize(QSize(32,32));
     lineButton->move(handleButton->width()+pointButton->width(),0);
     lineButton->setCheckable(true);
+    lineButton->setCursor(Qt::PointingHandCursor);
     drawingButtons->addButton(lineButton);
+    connect(lineButton, &QAbstractButton::pressed, this, &DataVisualization::lineButtonPressed);
     lineButton->show();
 
     splineButton = new QPushButton(freeLineIcon,"",graphicsView);
+    splineButton->setObjectName("splineButton");
     splineButton->setIconSize(QSize(32,32));
     splineButton->move(handleButton->width()+pointButton->width()+lineButton->width(),0);
     splineButton->setCheckable(true);
+    splineButton->setCursor(Qt::PointingHandCursor);
     drawingButtons->addButton(splineButton);
+    connect(splineButton, &QAbstractButton::pressed, this, &DataVisualization::splineButtonPressed);
     splineButton->show();
+
     drawingButtons->setExclusive(true);
 }
 
@@ -392,18 +405,28 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
         {
             if (mouseJustPressed)
             {
-                if (pressPos != moveEv->scenePos() && lineButton->isChecked())
+                if (pressPos != moveEv->scenePos())
                 {
-                    if(!movingLine)
+                    if(lineButton->isChecked())
                     {
-                        movingLine = new QGraphicsLineItem(pressPos.x(), pressPos.y(),
-                                                           moveEv->scenePos().x(), moveEv->scenePos().y());
-                        mainScene->addItem(movingLine);
+                        if(!movingLine)
+                        {
+                            movingLine = new QGraphicsLineItem(pressPos.x(), pressPos.y(),
+                                                               moveEv->scenePos().x(), moveEv->scenePos().y());
+                            mainScene->addItem(movingLine);
+                        }
+                        else
+                        {
+                            movingLine->setLine(pressPos.x(), pressPos.y(),
+                                                moveEv->scenePos().x(), moveEv->scenePos().y());
+                        }
                     }
-                    else
+                    else if (handleButton->isChecked())
                     {
-                        movingLine->setLine(pressPos.x(), pressPos.y(),
-                                            moveEv->scenePos().x(), moveEv->scenePos().y());
+                        QPointF delta = moveEv->scenePos() - pressPos;
+                        qInfo() << delta.x()/qFabs(delta.x());
+                        qInfo() << delta.y()/qFabs(delta.y());
+                        //mainChart->scroll(delta.x()/qFabs(delta.x())/10, delta.y()/qFabs(delta.y())/10);
                     }
                 }
             }
@@ -417,4 +440,24 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 void DataVisualization::chartPlotAreaChanged(const QRectF &plotArea)
 {
     drawElements();
+}
+
+void DataVisualization::handleButtonPressed()
+{
+    graphicsView->setCursor(QCursor(Qt::OpenHandCursor));
+}
+
+void DataVisualization::pointButtonPressed()
+{
+    graphicsView->setCursor(QCursor(Qt::CrossCursor));
+}
+
+void DataVisualization::lineButtonPressed()
+{
+    graphicsView->setCursor(QCursor(Qt::CrossCursor));
+}
+
+void DataVisualization::splineButtonPressed()
+{
+    graphicsView->setCursor(QCursor(Qt::CrossCursor));
 }

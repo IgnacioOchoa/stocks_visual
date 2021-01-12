@@ -5,6 +5,7 @@
 #include <QtCharts>
 #include <QtCharts/QCandlestickSeries>
 #include <QtCharts/QCandlestickSet>
+#include <QtMath>
 #include "stockdata.h"
 
 class DataVisualization : public QObject
@@ -52,6 +53,8 @@ private:
     bool mouseJustPressed;
     bool mouseJustReleased;
 
+    bool scrollMode;
+
     QPointF pressPos; //Scene coordinates
     QPointF releasePos;  //Secene coordinates
     QGraphicsLineItem* movingLine;
@@ -68,6 +71,10 @@ protected:
 
 private slots:
     void chartPlotAreaChanged(const QRectF &plotArea);
+    void handleButtonPressed();
+    void pointButtonPressed();
+    void lineButtonPressed();
+    void splineButtonPressed();
 
 };
 
