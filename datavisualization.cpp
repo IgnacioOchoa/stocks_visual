@@ -423,10 +423,12 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     }
                     else if (handleButton->isChecked())
                     {
-                        QPointF delta = moveEv->scenePos() - pressPos;
-                        qInfo() << delta.x()/qFabs(delta.x());
-                        qInfo() << delta.y()/qFabs(delta.y());
-                        //mainChart->scroll(delta.x()/qFabs(delta.x())/10, delta.y()/qFabs(delta.y())/10);
+                        QPointF delta = moveEv->scenePos() - moveEv->lastScenePos();
+
+                        //qInfo() << delta.x()/qFabs(delta.x());
+                        //qInfo() << delta.y()/qFabs(delta.y());
+                        mainChart->scroll(-delta.x(), delta.y());
+                        drawElements();
                     }
                 }
             }
