@@ -244,7 +244,8 @@ void DataVisualization::createButtons()
 
     handleButton = new QPushButton(handIcon,"",graphicsView);
     handleButton->setObjectName("handleButton");
-    handleButton->setIconSize(QSize(32,32));
+    handleButton->resize(QSize(40,40));
+    handleButton->setIconSize(QSize(40,40));
     handleButton->setCheckable(true);
     handleButton->setAutoExclusive(true);
     handleButton->setChecked(true);
@@ -257,7 +258,8 @@ void DataVisualization::createButtons()
     pointButton = new QPushButton(pointIcon,"",graphicsView);
     pointButton->move(handleButton->width(),0);
     pointButton->setObjectName("pointButton");
-    pointButton->setIconSize(QSize(32,32));
+    pointButton->resize(QSize(40,40));
+    pointButton->setIconSize(QSize(40,40));
     pointButton->setCheckable(true);
     pointButton->setAutoExclusive(true);
     pointButton->setCursor(Qt::PointingHandCursor);
@@ -267,7 +269,8 @@ void DataVisualization::createButtons()
 
     lineButton = new QPushButton(lineIcon,"",graphicsView);
     lineButton->setObjectName("lineButton");
-    lineButton->setIconSize(QSize(32,32));
+    lineButton->resize(QSize(40,40));
+    lineButton->setIconSize(QSize(40,40));
     lineButton->move(handleButton->width()+pointButton->width(),0);
     lineButton->setCheckable(true);
     lineButton->setCursor(Qt::PointingHandCursor);
@@ -277,7 +280,8 @@ void DataVisualization::createButtons()
 
     splineButton = new QPushButton(freeLineIcon,"",graphicsView);
     splineButton->setObjectName("splineButton");
-    splineButton->setIconSize(QSize(32,32));
+    splineButton->resize(QSize(40,40));
+    splineButton->setIconSize(QSize(40,40));
     splineButton->move(handleButton->width()+pointButton->width()+lineButton->width(),0);
     splineButton->setCheckable(true);
     splineButton->setCursor(Qt::PointingHandCursor);
