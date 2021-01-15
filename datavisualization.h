@@ -24,6 +24,7 @@ private:
     QPointF scene2series(const QPointF &pt);
     void logRects(const QString& origin);
     void createButtons();
+    void clearScene();
 
     StockData* stockData;
 

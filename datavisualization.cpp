@@ -3,10 +3,13 @@
 DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* sData, QObject *parent) :
     QObject(parent),
     stockData(sData),
-    graphicsView(UiGraphicsView)
+    mainScene(new QGraphicsScene(parent)),
+    graphicsView(UiGraphicsView),
+    mainChart(new QChart())
 {
-    mainScene = new QGraphicsScene(parent);
-    mainChart = new QChart();
+
+    //qDeleteAll(drawnElements);
+   // drawnElements.clear();
 
     graphicsView->installEventFilter(this);
     mainScene->installEventFilter(this);
@@ -14,6 +17,8 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
 
     graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    mainScene->addItem(mainChart);
 
     axisY = nullptr;
     candleSeries = nullptr;
@@ -31,6 +36,7 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
 void DataVisualization::plotData()
 // Once the information about the specific stock has been received and processed, this functions plots the data
 {
+    clearScene();
     zoomLevel = 1;
     mainChart->removeAllSeries();
     foreach (QAbstractAxis* ax, mainChart->axes())
@@ -102,8 +108,6 @@ void DataVisualization::plotData()
     calculateYticks();
 
     mainChart->legend()->setVisible(false);
-
-    mainScene->addItem(mainChart);
     graphicsView->setScene(mainScene);
     graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     graphicsView->show();
@@ -292,6 +296,16 @@ void DataVisualization::createButtons()
     drawingButtons->setExclusive(true);
 }
 
+void DataVisualization::clearScene()
+{
+//    qInfo() << "Graphics Items:";
+//    foreach(QGraphicsItem* itm, mainScene->items())
+//    {
+//        qInfo() << itm->type();
+//    }
+    //mainScene->clear();
+}
+
 
 bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 {
@@ -417,6 +431,8 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                         {
                             movingLine = new QGraphicsLineItem(pressPos.x(), pressPos.y(),
                                                                moveEv->scenePos().x(), moveEv->scenePos().y());
+                            qInfo() << "New moving line created";
+                            qInfo() << "addItem 2";
                             mainScene->addItem(movingLine);
                         }
                         else

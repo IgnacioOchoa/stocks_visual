@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
     stockData = new StockData(this);
     dataVisualization = new DataVisualization(ui->GV_chartView, stockData, this);
 
-
     statLabel = new QLabel();
     statBar = this->statusBar();
     statBar->addWidget(statLabel);
@@ -21,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->CB_stockName,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::stockCBchanged);
     connect(ui->PB_plot, &QPushButton::pressed, this, &MainWindow::plotPressed);
     connect(stockData, &StockData::stockInfoReady, this, &MainWindow::stockInfoReady);
+    connect(stockData, &StockData::stockDataReady, this, &MainWindow::stockDataReadyToPlot);
 
     ui->LE_currency->setReadOnly(true);
     ui->LE_symbol->setReadOnly(true);
@@ -55,7 +55,6 @@ void MainWindow::plotPressed()
         return;
     }
     stockData->getStockData(ui->CB_stockName->currentText(), initial_dt, final_dt);
-    connect(stockData, &StockData::stockDataReady, this, &MainWindow::stockDataReadyToPlot);
 }
 
 void MainWindow::populateCBStockInfo()

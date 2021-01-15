@@ -61,8 +61,10 @@ private slots:
     void plotPressed();
     void on_PB_zoomIn_clicked();
     void on_PB_zoomOut_clicked();
-    void stockDataReadyToPlot();
     void stockInfoReady();
+
+public slots:
+    void stockDataReadyToPlot();
 
 };
 
