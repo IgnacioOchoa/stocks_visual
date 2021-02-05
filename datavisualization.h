@@ -65,7 +65,11 @@ private:
 
     QGraphicsPathItem* splineItem;
 
-    QList<QPointF>* splinePoints;
+    QList<QGraphicsLineItem*> *splineTempLines;
+
+    QPen drawingPen;
+    QPen transitoryPen;
+
     QPainterPath* splinePath;
 
     QPushButton* handleButton;

@@ -30,6 +30,10 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
     movingLine = nullptr;
     pointButton = nullptr;
 
+    splineTempLines = new QList<QGraphicsLineItem*>;
+    drawingPen = QPen(QBrush(Qt::black, Qt::SolidPattern), 2);
+    transitoryPen = QPen(QBrush(Qt::black, Qt::SolidPattern), 1.5);
+
     drawingButtons = new QButtonGroup(graphicsView);
 }
 
@@ -388,11 +392,8 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 else if (splineButton->isChecked())
                 {
                     splineStarted = true;
-                    splinePoints = new QList<QPointF>;
                     splinePath = new QPainterPath;
-                    splinePoints->append(pressPos);
                     splinePath->moveTo(pressPos);
-                    //splineItem = mainScene->addPath(*splinePath);
                     prevPos = pressPos;
                     qInfo() << "Spline started";
                 }
@@ -423,11 +424,11 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 }
                 else if (splineStarted)
                 {
-                    splinePoints->append(releasePos);
+                    qDeleteAll(*splineTempLines);
+                    splineTempLines->clear();
                     splinePath->lineTo(releasePos);
                     splineStarted = false;
-                    splineItem = mainScene->addPath(*splinePath);
-                    qInfo() << "Spline ended";
+                    splineItem = mainScene->addPath(*splinePath, drawingPen);
                     drawnElements.append(splineItem);
                 }
             }
@@ -450,6 +451,7 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                         {
                             movingLine = new QGraphicsLineItem(pressPos.x(), pressPos.y(),
                                                                moveEv->scenePos().x(), moveEv->scenePos().y());
+                            movingLine->setPen(drawingPen);
                             mainScene->addItem(movingLine);
                         }
                         else
@@ -470,10 +472,11 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                         if (qSqrt(qPow(prevPos.x()-moveEv->scenePos().x(),2)+
                                   qPow(prevPos.y()-moveEv->scenePos().y(),2)) > splineDef)
                         {
-                            splinePoints->append(moveEv->scenePos());
+                            splineTempLines->append(
+                                        mainScene->addLine(prevPos.x(),prevPos.y(),moveEv->scenePos().x(),moveEv->scenePos().y(),
+                                        transitoryPen));
                             splinePath->lineTo(moveEv->scenePos());
                             prevPos = moveEv->scenePos();
-                            qInfo() << "Spline point added";
                         }
                     }
                 }
