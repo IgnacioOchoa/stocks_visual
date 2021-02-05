@@ -50,15 +50,23 @@ private:
 
     float axisYmin;
     float axisYmax;
+    qreal splineDef = 5.0;
 
     bool mouseJustPressed;
     bool mouseJustReleased;
 
     bool scrollMode;
+    bool splineStarted;
 
     QPointF pressPos; //Scene coordinates
     QPointF releasePos;  //Secene coordinates
+    QPointF prevPos; // Previouse point coordinates
     QGraphicsLineItem* movingLine;
+
+    QGraphicsPathItem* splineItem;
+
+    QList<QPointF>* splinePoints;
+    QPainterPath* splinePath;
 
     QPushButton* handleButton;
     QPushButton* pointButton;

@@ -315,7 +315,6 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
         QResizeEvent* re = static_cast<QResizeEvent*>(event);
         if(re)
         {
-            qInfo() << "*****Resize event:\nOld size = " << re->oldSize() << "\nNew size = " << re->size();
             mainChart->resize(re->size());
             mainScene->setSceneRect(mainScene->itemsBoundingRect());
             //logRects("eventFilter: QEvent::Resize sent to graphicsView");
@@ -386,6 +385,17 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     itm->setData(0,seriesPoint);
                     drawnElements.append(itm);
                 }
+                else if (splineButton->isChecked())
+                {
+                    splineStarted = true;
+                    splinePoints = new QList<QPointF>;
+                    splinePath = new QPainterPath;
+                    splinePoints->append(pressPos);
+                    splinePath->moveTo(pressPos);
+                    //splineItem = mainScene->addPath(*splinePath);
+                    prevPos = pressPos;
+                    qInfo() << "Spline started";
+                }
             }
         }
         return false;
@@ -411,6 +421,15 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     drawnElements.append(movingLine);
                     movingLine = nullptr;
                 }
+                else if (splineStarted)
+                {
+                    splinePoints->append(releasePos);
+                    splinePath->lineTo(releasePos);
+                    splineStarted = false;
+                    splineItem = mainScene->addPath(*splinePath);
+                    qInfo() << "Spline ended";
+                    drawnElements.append(splineItem);
+                }
             }
         }
         return false;
@@ -431,8 +450,6 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                         {
                             movingLine = new QGraphicsLineItem(pressPos.x(), pressPos.y(),
                                                                moveEv->scenePos().x(), moveEv->scenePos().y());
-                            qInfo() << "New moving line created";
-                            qInfo() << "addItem 2";
                             mainScene->addItem(movingLine);
                         }
                         else
@@ -445,10 +462,19 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     {
                         QPointF delta = moveEv->scenePos() - moveEv->lastScenePos();
 
-                        //qInfo() << delta.x()/qFabs(delta.x());
-                        //qInfo() << delta.y()/qFabs(delta.y());
                         mainChart->scroll(-delta.x(), delta.y());
                         drawElements();
+                    }
+                    else if (splineStarted)
+                    {
+                        if (qSqrt(qPow(prevPos.x()-moveEv->scenePos().x(),2)+
+                                  qPow(prevPos.y()-moveEv->scenePos().y(),2)) > splineDef)
+                        {
+                            splinePoints->append(moveEv->scenePos());
+                            splinePath->lineTo(moveEv->scenePos());
+                            prevPos = moveEv->scenePos();
+                            qInfo() << "Spline point added";
+                        }
                     }
                 }
             }
@@ -462,6 +488,7 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 void DataVisualization::chartPlotAreaChanged(const QRectF &plotArea)
 {
     drawElements();
+    qInfo()<<"chartPlotAreaChanged called";
 }
 
 void DataVisualization::handleButtonPressed()
