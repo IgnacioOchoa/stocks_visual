@@ -61,16 +61,16 @@ private:
     QPointF pressPos; //Scene coordinates
     QPointF releasePos;  //Secene coordinates
     QPointF prevPos; // Previouse point coordinates
+
     QGraphicsLineItem* movingLine;
 
     QGraphicsPathItem* splineItem;
-
+    QPainterPath* splinePath;
     QList<QGraphicsLineItem*> *splineTempLines;
+    QList<QVariant>* splineSeriesPoints;
 
     QPen drawingPen;
     QPen transitoryPen;
-
-    QPainterPath* splinePath;
 
     QPushButton* handleButton;
     QPushButton* pointButton;

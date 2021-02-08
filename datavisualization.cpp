@@ -207,6 +207,7 @@ void DataVisualization::createElements()
 
 void DataVisualization::drawElements()
 {
+    qInfo() << "drawElements started";
     if (!drawnElements.isEmpty())
     {
        foreach(QGraphicsItem* itm, drawnElements)
@@ -221,6 +222,23 @@ void DataVisualization::drawElements()
                QPointF p1 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(0)),candleSeries);
                QPointF p2 = mainChart->mapToPosition(qvariant_cast<QPointF>(itm->data(1)),candleSeries);
                linitm->setLine(p1.x(),p1.y(),p2.x(),p2.y());
+           }
+           else if(QGraphicsPathItem* pathItm = qgraphicsitem_cast<QGraphicsPathItem*>(itm))
+           {
+               splinePath = new QPainterPath;
+               QList<QVariant> lst = qvariant_cast<QList<QVariant>>(itm->data(0));
+               QList<QVariant>::iterator itr = lst.begin();
+               QPointF pt = mainChart->mapToPosition(qvariant_cast<QPointF>(*itr),candleSeries);
+               splinePath->moveTo(pt);
+               itr++;
+               while(itr!=lst.end())
+               {
+                   pt = mainChart->mapToPosition(qvariant_cast<QPointF>(*itr),candleSeries);
+                   splinePath->lineTo(pt);
+                   itr++;
+               }
+               pathItm->setPath(*splinePath);
+               delete splinePath;
            }
        }
     }
@@ -392,7 +410,9 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                 else if (splineButton->isChecked())
                 {
                     splineStarted = true;
+                    splineSeriesPoints = new QList<QVariant>;
                     splinePath = new QPainterPath;
+                    splineSeriesPoints->append(scene2series(pressPos));
                     splinePath->moveTo(pressPos);
                     prevPos = pressPos;
                     qInfo() << "Spline started";
@@ -427,9 +447,12 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                     qDeleteAll(*splineTempLines);
                     splineTempLines->clear();
                     splinePath->lineTo(releasePos);
+                    splineSeriesPoints->append(scene2series(releasePos));
                     splineStarted = false;
                     splineItem = mainScene->addPath(*splinePath, drawingPen);
+                    splineItem->setData(0, *splineSeriesPoints);
                     drawnElements.append(splineItem);
+                    delete splinePath;
                 }
             }
         }
@@ -476,6 +499,7 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
                                         mainScene->addLine(prevPos.x(),prevPos.y(),moveEv->scenePos().x(),moveEv->scenePos().y(),
                                         transitoryPen));
                             splinePath->lineTo(moveEv->scenePos());
+                            splineSeriesPoints->append(scene2series(moveEv->scenePos()));
                             prevPos = moveEv->scenePos();
                         }
                     }
