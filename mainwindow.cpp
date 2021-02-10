@@ -85,16 +85,6 @@ void MainWindow::stockCBchanged(int indx)
     ui->LE_displaysymbol->setText(stockData->getDisplaySymbols()[indx]);
 }
 
-void MainWindow::on_PB_zoomIn_clicked()
-{
-    ui->GV_chartView->scale(1.2,1.2);
-}
-
-void MainWindow::on_PB_zoomOut_clicked()
-{
-    ui->GV_chartView->scale(0.8,0.8);
-}
-
 void MainWindow::stockDataReadyToPlot()
 {
     dataVisualization->plotData();

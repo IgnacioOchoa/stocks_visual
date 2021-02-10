@@ -10,3 +10,16 @@ QGraphicsView QPushButton:checked { background-color: #b4a7d6;
                                     border-style: dashed}
 
 /*QGraphicsView QPushButton#handleButton {padding: 4px}*/
+
+QFrame#penFrame {
+    border: 2px solid grey;
+    border-radius: 4px;
+    padding: 2px;
+    margin: 3px
+}
+
+QLabel#brushLabel {
+    border: 1px solid red;
+    padding: 4px;
+    margin: 3px
+}

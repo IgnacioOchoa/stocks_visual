@@ -18,7 +18,6 @@
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QListWidget>
@@ -42,12 +41,8 @@ public:
     QWidget *centralwidget;
     QGridLayout *gridLayout_2;
     QFrame *frame_2;
-    QVBoxLayout *verticalLayout_4;
-    QGraphicsView *GV_chartView;
-    QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout_2;
-    QPushButton *PB_zoomIn;
-    QPushButton *PB_zoomOut;
+    QGraphicsView *GV_chartView;
     QPlainTextEdit *TE_messages;
     QFrame *frame;
     QVBoxLayout *verticalLayout;
@@ -103,35 +98,12 @@ public:
         frame_2->setSizePolicy(sizePolicy);
         frame_2->setFrameShape(QFrame::StyledPanel);
         frame_2->setFrameShadow(QFrame::Raised);
-        verticalLayout_4 = new QVBoxLayout(frame_2);
-        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        verticalLayout_2 = new QVBoxLayout(frame_2);
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         GV_chartView = new QGraphicsView(frame_2);
         GV_chartView->setObjectName(QString::fromUtf8("GV_chartView"));
 
-        verticalLayout_4->addWidget(GV_chartView);
-
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        verticalLayout_2 = new QVBoxLayout();
-        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        PB_zoomIn = new QPushButton(frame_2);
-        PB_zoomIn->setObjectName(QString::fromUtf8("PB_zoomIn"));
-        QFont font;
-        font.setPointSize(10);
-        PB_zoomIn->setFont(font);
-        PB_zoomIn->setCursor(QCursor(Qt::PointingHandCursor));
-        PB_zoomIn->setFlat(false);
-
-        verticalLayout_2->addWidget(PB_zoomIn);
-
-        PB_zoomOut = new QPushButton(frame_2);
-        PB_zoomOut->setObjectName(QString::fromUtf8("PB_zoomOut"));
-        PB_zoomOut->setFont(font);
-
-        verticalLayout_2->addWidget(PB_zoomOut);
-
-
-        horizontalLayout->addLayout(verticalLayout_2);
+        verticalLayout_2->addWidget(GV_chartView);
 
         TE_messages = new QPlainTextEdit(frame_2);
         TE_messages->setObjectName(QString::fromUtf8("TE_messages"));
@@ -141,10 +113,7 @@ public:
         sizePolicy1.setHeightForWidth(TE_messages->sizePolicy().hasHeightForWidth());
         TE_messages->setSizePolicy(sizePolicy1);
 
-        horizontalLayout->addWidget(TE_messages);
-
-
-        verticalLayout_4->addLayout(horizontalLayout);
+        verticalLayout_2->addWidget(TE_messages);
 
 
         gridLayout_2->addWidget(frame_2, 0, 1, 1, 1);
@@ -274,7 +243,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 374, 177));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 375, 190));
         verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents_2);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
         LW_daysList = new QListWidget(scrollAreaWidgetContents_2);
@@ -292,7 +261,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 1042, 25));
+        menubar->setGeometry(QRect(0, 0, 1042, 26));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         menuEdit = new QMenu(menubar);
@@ -322,8 +291,6 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        PB_zoomIn->setText(QCoreApplication::translate("MainWindow", "+", nullptr));
-        PB_zoomOut->setText(QCoreApplication::translate("MainWindow", "-", nullptr));
         groupBox->setTitle(QCoreApplication::translate("MainWindow", "Data selection", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Ending Date", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "Starting Date", nullptr));

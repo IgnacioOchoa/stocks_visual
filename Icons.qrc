@@ -4,5 +4,6 @@
         <file>lineIcon.png</file>
         <file>handIcon.png</file>
         <file>freeLineIcon.png</file>
+        <file>paintBrush.png</file>
     </qresource>
 </RCC>

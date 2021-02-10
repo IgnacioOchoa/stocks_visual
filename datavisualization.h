@@ -72,10 +72,14 @@ private:
     QPen drawingPen;
     QPen transitoryPen;
 
+    QFrame* penFrame;
+    QComboBox* cbPenSize;
+
     QPushButton* handleButton;
     QPushButton* pointButton;
     QPushButton* lineButton;
     QPushButton* splineButton;
+    QLabel*      brushLabel;
 
     QButtonGroup* drawingButtons;
 

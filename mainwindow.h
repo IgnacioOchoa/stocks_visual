@@ -59,8 +59,6 @@ private slots:
 
     void stockCBchanged(int);
     void plotPressed();
-    void on_PB_zoomIn_clicked();
-    void on_PB_zoomOut_clicked();
     void stockInfoReady();
 
 public slots:

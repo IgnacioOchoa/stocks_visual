@@ -7,10 +7,6 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
     graphicsView(UiGraphicsView),
     mainChart(new QChart())
 {
-
-    //qDeleteAll(drawnElements);
-   // drawnElements.clear();
-
     graphicsView->installEventFilter(this);
     mainScene->installEventFilter(this);
     mainChart->installEventFilter(this);
@@ -35,6 +31,7 @@ DataVisualization::DataVisualization(QGraphicsView *UiGraphicsView, StockData* s
     transitoryPen = QPen(QBrush(Qt::black, Qt::SolidPattern), 1.5);
 
     drawingButtons = new QButtonGroup(graphicsView);
+    createButtons();
 }
 
 void DataVisualization::plotData()
@@ -115,9 +112,6 @@ void DataVisualization::plotData()
     graphicsView->setScene(mainScene);
     graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     graphicsView->show();
-
-    createElements();
-    createButtons();
 }
 
 void DataVisualization::calculateYticks()
@@ -195,16 +189,6 @@ void DataVisualization::calculateWeekLines()
     weekAxis->setLineVisible(false);
 }
 
-void DataVisualization::createElements()
-{
-    //QPointF posInChart = QPointF(8,130);
-    //QPointF pos = mainChart->mapToPosition(posInChart, candleSeries);
-    //QGraphicsItem* itm = mainScene->addEllipse(-2.5,-2.5,5,5);
-    //itm->setPos(pos);
-    //itm->setData(0,posInChart);
-    //drawnElements.append(itm);
-}
-
 void DataVisualization::drawElements()
 {
     qInfo() << "drawElements started";
@@ -267,6 +251,7 @@ void DataVisualization::createButtons()
     QIcon pointIcon(QPixmap(":/iconImages/pointIcon.png"));
     QIcon lineIcon(QPixmap(":/iconImages/lineIcon.png"));
     QIcon freeLineIcon(QPixmap(":/iconImages/freeLineIcon.png"));
+    QPixmap paintBrushIcon(":/iconImages/paintBrush.png");
 
     handleButton = new QPushButton(handIcon,"",graphicsView);
     handleButton->setObjectName("handleButton");
@@ -316,6 +301,22 @@ void DataVisualization::createButtons()
     splineButton->show();
 
     drawingButtons->setExclusive(true);
+
+    penFrame = new QFrame(graphicsView);
+    penFrame->setObjectName("penFrame");
+    penFrame->setFrameStyle(QFrame::Box);
+
+    brushLabel = new QLabel(penFrame);
+    brushLabel->setPixmap(paintBrushIcon);
+    brushLabel->setObjectName("brushLabel");
+    brushLabel->resize(QSize(40,40));
+    brushLabel->setScaledContents(true);
+
+    //cbPenSize = new QComboBox(penFrame);
+    penFrame->show();
+    chartPlotAreaChanged(QRectF());
+
+
 }
 
 void DataVisualization::clearScene()
@@ -515,7 +516,9 @@ bool DataVisualization::eventFilter(QObject *watched, QEvent *event)
 void DataVisualization::chartPlotAreaChanged(const QRectF &plotArea)
 {
     drawElements();
-    qInfo()<<"chartPlotAreaChanged called";
+    penFrame->move(graphicsView->width()-brushLabel->width()-70,0);
+    //cbPenSize->move(-30,3);
+
 }
 
 void DataVisualization::handleButtonPressed()
